@@ -21,6 +21,7 @@ exports[`expands more options 1`] = `
         },
       ]
     }
+    returnTo=""
   />
   <div
     className="text-center"
@@ -57,6 +58,7 @@ exports[`expands more options 2`] = `
         },
       ]
     }
+    returnTo=""
   />
   <form
     onSubmit={[Function]}
@@ -147,6 +149,7 @@ exports[`logs in with identity provider 1`] = `
         },
       ]
     }
+    returnTo=""
   />
   <div
     className="text-center"

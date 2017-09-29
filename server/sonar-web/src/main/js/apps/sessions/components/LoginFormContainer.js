@@ -25,6 +25,7 @@ import LoginForm from './LoginForm';
 import { doLogin } from '../../../store/rootActions';
 import { getAppState } from '../../../store/rootReducer';
 import { getIdentityProviders } from '../../../api/users';
+import { getBaseUrl } from '../../../helpers/urls';
 
 class LoginFormContainer extends React.PureComponent {
   /*:: mounted: boolean; */
@@ -48,11 +49,14 @@ class LoginFormContainer extends React.PureComponent {
     this.mounted = false;
   }
 
-  handleSuccessfulLogin = () => {
+  getReturnUrl = () => {
     const { location } = this.props;
     const queryReturnTo = location.query['return_to'];
-    const returnTo = queryReturnTo ? `${queryReturnTo}${location.hash}` : `${window.baseUrl}/`;
-    window.location = returnTo;
+    return queryReturnTo ? `${queryReturnTo}${location.hash}` : `${getBaseUrl()}/`;
+  };
+
+  handleSuccessfulLogin = () => {
+    window.location = this.getReturnUrl();
   };
 
   handleSubmit = (login /*: string */, password /*: string */) => {
@@ -67,7 +71,11 @@ class LoginFormContainer extends React.PureComponent {
     }
 
     return (
-      <LoginForm identityProviders={this.state.identityProviders} onSubmit={this.handleSubmit} />
+      <LoginForm
+        identityProviders={this.state.identityProviders}
+        onSubmit={this.handleSubmit}
+        returnTo={this.getReturnUrl()}
+      />
     );
   }
 }

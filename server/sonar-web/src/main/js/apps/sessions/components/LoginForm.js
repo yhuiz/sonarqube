@@ -22,6 +22,7 @@ import React from 'react';
 import OAuthProviders from './OAuthProviders';
 import GlobalMessagesContainer from '../../../app/components/GlobalMessagesContainer';
 import { translate } from '../../../helpers/l10n';
+import { getBaseUrl } from '../../../helpers/urls';
 
 /*::
 type Props = {
@@ -31,7 +32,8 @@ type Props = {
     key: string,
     name: string
   }>,
-  onSubmit: (string, string) => void
+  onSubmit: (string, string) => void,
+  returnTo: string
 };
 */
 
@@ -72,7 +74,10 @@ export default class LoginForm extends React.PureComponent {
         <h1 className="maintenance-title text-center">{translate('login.login_to_sonarqube')}</h1>
 
         {this.props.identityProviders.length > 0 && (
-          <OAuthProviders identityProviders={this.props.identityProviders} />
+          <OAuthProviders
+            identityProviders={this.props.identityProviders}
+            returnTo={this.props.returnTo}
+          />
         )}
 
         {this.state.collapsed ? (
@@ -127,7 +132,7 @@ export default class LoginForm extends React.PureComponent {
                 <button name="commit" type="submit">
                   {translate('sessions.log_in')}
                 </button>
-                <a className="spacer-left" href={window.baseUrl + '/'}>
+                <a className="spacer-left" href={getBaseUrl() + '/'}>
                   {translate('cancel')}
                 </a>
               </div>

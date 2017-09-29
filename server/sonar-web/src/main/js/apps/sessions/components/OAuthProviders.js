@@ -20,6 +20,7 @@
 // @flow
 import React from 'react';
 import { translateWithParameters } from '../../../helpers/l10n';
+import { getBaseUrl } from '../../../helpers/urls';
 
 /*::
 type Props = {
@@ -29,7 +30,8 @@ type Props = {
     iconPath: string,
     key: string,
     name: string
-  }>
+  }>,
+  returnTo: string
 };
 */
 
@@ -40,7 +42,10 @@ export default function OAuthProviders(props /*: Props */) {
         {props.identityProviders.map(identityProvider => (
           <li key={identityProvider.key}>
             <a
-              href={`${window.baseUrl}/sessions/init/${identityProvider.key}`}
+              href={
+                `${getBaseUrl()}/sessions/init/${identityProvider.key}` +
+                `?return_to=${encodeURIComponent(props.returnTo)}`
+              }
               style={{ backgroundColor: identityProvider.backgroundColor }}
               // $FlowFixMe formatLabel is always defined through defaultProps
               title={props.formatLabel(identityProvider.name)}>
