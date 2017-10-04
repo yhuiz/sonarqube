@@ -23,7 +23,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class TimeProfilerTest {
 
@@ -41,7 +48,7 @@ public class TimeProfilerTest {
     verify(logger).info("Cycle analysis...");
 
     profiler.stop();
-    verify(logger).info(eq("{} done: {} ms"), eq("Cycle analysis"), anyInt());
+    verify(logger).info(eq("{} done: {} ms"), eq("Cycle analysis"), anyLong());
   }
 
   @Test
@@ -53,7 +60,7 @@ public class TimeProfilerTest {
     profiler.stop();
     profiler.stop();
     verify(logger, times(1)).info(anyString()); // start() executes log() with 1 parameter
-    verify(logger, times(1)).info(anyString(), anyString(), anyInt()); // stop() executes log() with 3 parameters
+    verify(logger, times(1)).info(anyString(), anyString(), anyLong()); // stop() executes log() with 3 parameters
   }
 
   @Test
@@ -64,7 +71,7 @@ public class TimeProfilerTest {
     profiler.start("New task");
     profiler.stop();
     profiler.stop();
-    verify(logger, never()).info(eq("{} done: {} ms"), eq("Cycle analysis"), anyInt());
-    verify(logger, times(1)).info(eq("{} done: {} ms"), eq("New task"), anyInt());
+    verify(logger, never()).info(eq("{} done: {} ms"), eq("Cycle analysis"), any());
+    verify(logger, times(1)).info(eq("{} done: {} ms"), eq("New task"), anyLong());
   }
 }
