@@ -19,27 +19,25 @@
  */
 package org.sonar.duplications.utils;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SortedListsUtilsTest {
 
   @Test
   public void testContains() {
-    assertThat(contains(Arrays.asList(1, 2, 3), Arrays.asList(1, 2)), is(true));
-    assertThat(contains(Arrays.asList(1, 2), Arrays.asList(1, 2, 3)), is(false));
+    assertThat(contains(Arrays.asList(1, 2, 3), Arrays.asList(1, 2))).isTrue();
+    assertThat(contains(Arrays.asList(1, 2), Arrays.asList(1, 2, 3))).isFalse();
 
-    assertThat(contains(Arrays.asList(1, 2, 3), Arrays.asList(1, 3)), is(true));
-    assertThat(contains(Arrays.asList(1, 3), Arrays.asList(1, 2, 3)), is(false));
+    assertThat(contains(Arrays.asList(1, 2, 3), Arrays.asList(1, 3))).isTrue();
+    assertThat(contains(Arrays.asList(1, 3), Arrays.asList(1, 2, 3))).isFalse();
 
-    assertThat(contains(Arrays.asList(1, 2, 3), Arrays.asList(1, 2, 2, 3)), is(true));
-    assertThat(contains(Arrays.asList(1, 2, 2, 3), Arrays.asList(1, 2, 3)), is(true));
+    assertThat(contains(Arrays.asList(1, 2, 3), Arrays.asList(1, 2, 2, 3))).isTrue();
+    assertThat(contains(Arrays.asList(1, 2, 2, 3), Arrays.asList(1, 2, 3))).isTrue();
   }
 
   private static boolean contains(List<Integer> a, List<Integer> b) {

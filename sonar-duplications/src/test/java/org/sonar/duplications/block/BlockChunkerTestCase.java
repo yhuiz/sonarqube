@@ -25,11 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.sonar.duplications.statement.Statement;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Any implementation of {@link BlockChunker} should pass these test scenarios.
@@ -64,7 +60,7 @@ public abstract class BlockChunkerTestCase {
     List<Statement> statements = createStatementsFromStrings("LCL", "C", "LCL", "C", "L", "C", "LCL", "C", "LCL");
     BlockChunker chunker = createChunkerWithBlockSize(5);
     List<Block> blocks = chunker.chunk("resource", statements);
-    assertThat("first and last block should have different hashes", blocks.get(0).getBlockHash(), not(equalTo(blocks.get(blocks.size() - 1).getBlockHash())));
+    assertThat(blocks.get(0).getBlockHash()).as("check that first and last block have different hashes").isNotEqualTo(blocks.get(blocks.size() - 1).getBlockHash());
   }
 
   /**
@@ -75,7 +71,7 @@ public abstract class BlockChunkerTestCase {
     List<Statement> statements = createStatementsFromStrings("1", "", "1", "1", "");
     BlockChunker chunker = createChunkerWithBlockSize(3);
     List<Block> blocks = chunker.chunk("resource", statements);
-    assertThat("first and last block should have different hashes", blocks.get(0).getBlockHash(), not(equalTo(blocks.get(blocks.size() - 1).getBlockHash())));
+    assertThat(blocks.get(0).getBlockHash()).as("check that first and last block have different hashes").isNotEqualTo(blocks.get(blocks.size() - 1).getBlockHash());
   }
 
   /**
@@ -87,13 +83,13 @@ public abstract class BlockChunkerTestCase {
     List<Statement> statements = createStatementsFromStrings("1", "2", "3", "4", "5", "6");
     BlockChunker chunker = createChunkerWithBlockSize(3);
     List<Block> blocks = chunker.chunk("resource", statements);
-    assertThat(blocks.size(), is(4));
-    assertThat(blocks.get(0).getIndexInFile(), is(0));
-    assertThat(blocks.get(0).getStartLine(), is(0));
-    assertThat(blocks.get(0).getEndLine(), is(2));
-    assertThat(blocks.get(1).getIndexInFile(), is(1));
-    assertThat(blocks.get(1).getStartLine(), is(1));
-    assertThat(blocks.get(1).getEndLine(), is(3));
+    assertThat(blocks).hasSize(4);
+    assertThat(blocks.get(0).getIndexInFile()).isEqualTo(0);
+    assertThat(blocks.get(0).getStartLine()).isEqualTo(0);
+    assertThat(blocks.get(0).getEndLine()).isEqualTo(2);
+    assertThat(blocks.get(1).getIndexInFile()).isEqualTo(1);
+    assertThat(blocks.get(1).getStartLine()).isEqualTo(1);
+    assertThat(blocks.get(1).getEndLine()).isEqualTo(3);
   }
 
   @Test
@@ -101,8 +97,8 @@ public abstract class BlockChunkerTestCase {
     List<Statement> statements = createStatementsFromStrings("1", "2", "1", "2");
     BlockChunker chunker = createChunkerWithBlockSize(2);
     List<Block> blocks = chunker.chunk("resource", statements);
-    assertThat("blocks 0 and 2 should have same hash", blocks.get(0).getBlockHash(), equalTo(blocks.get(2).getBlockHash()));
-    assertThat("blocks 0 and 1 should have different hash", blocks.get(0).getBlockHash(), not(equalTo(blocks.get(1).getBlockHash())));
+    assertThat(blocks.get(0).getBlockHash()).as("blocks 0 and 2 should have same hash").isEqualTo(blocks.get(2).getBlockHash());
+    assertThat(blocks.get(0).getBlockHash()).as("blocks 0 and 1 should have different hash").isNotEqualTo(blocks.get(1).getBlockHash());
   }
 
   /**
@@ -114,7 +110,7 @@ public abstract class BlockChunkerTestCase {
     List<Statement> statements = Collections.emptyList();
     BlockChunker blockChunker = createChunkerWithBlockSize(2);
     List<Block> blocks = blockChunker.chunk("resource", statements);
-    assertThat(blocks, sameInstance(Collections.EMPTY_LIST));
+    assertThat(blocks).isSameAs(Collections.EMPTY_LIST);
   }
 
   /**
@@ -126,7 +122,7 @@ public abstract class BlockChunkerTestCase {
     List<Statement> statements = createStatementsFromStrings("statement");
     BlockChunker blockChunker = createChunkerWithBlockSize(2);
     List<Block> blocks = blockChunker.chunk("resource", statements);
-    assertThat(blocks, sameInstance(Collections.EMPTY_LIST));
+    assertThat(blocks).isSameAs(Collections.EMPTY_LIST);
   }
 
   /**

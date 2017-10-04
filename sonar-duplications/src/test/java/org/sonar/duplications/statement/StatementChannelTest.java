@@ -19,24 +19,21 @@
  */
 package org.sonar.duplications.statement;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import org.mockito.Matchers;
-
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.sonar.duplications.statement.matcher.AnyTokenMatcher;
 import org.sonar.duplications.statement.matcher.TokenMatcher;
 import org.sonar.duplications.token.Token;
 import org.sonar.duplications.token.TokenQueue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class StatementChannelTest {
 
@@ -57,7 +54,7 @@ public class StatementChannelTest {
     List<Statement> output = mock(List.class);
     StatementChannel channel = StatementChannel.create(matcher);
 
-    assertThat(channel.consume(tokenQueue, output), is(false));
+    assertThat(channel.consume(tokenQueue, output)).isFalse();
     ArgumentCaptor<List> matchedTokenList = ArgumentCaptor.forClass(List.class);
     verify(matcher).matchToken(Matchers.eq(tokenQueue), matchedTokenList.capture());
     verifyNoMoreInteractions(matcher);
@@ -74,14 +71,14 @@ public class StatementChannelTest {
     StatementChannel channel = StatementChannel.create(matcher);
     List<Statement> output = mock(List.class);
 
-    assertThat(channel.consume(tokenQueue, output), is(true));
+    assertThat(channel.consume(tokenQueue, output)).isTrue();
     verify(matcher).matchToken(Matchers.eq(tokenQueue), Matchers.anyList());
     verifyNoMoreInteractions(matcher);
     ArgumentCaptor<Statement> statement = ArgumentCaptor.forClass(Statement.class);
     verify(output).add(statement.capture());
-    assertThat(statement.getValue().getValue(), is("a"));
-    assertThat(statement.getValue().getStartLine(), is(1));
-    assertThat(statement.getValue().getEndLine(), is(1));
+    assertThat(statement.getValue().getValue()).isEqualTo("a");
+    assertThat(statement.getValue().getStartLine()).isEqualTo(1);
+    assertThat(statement.getValue().getEndLine()).isEqualTo(1);
     verifyNoMoreInteractions(output);
   }
 
@@ -92,7 +89,7 @@ public class StatementChannelTest {
     StatementChannel channel = StatementChannel.create(matcher);
     List<Statement> output = mock(List.class);
 
-    assertThat(channel.consume(tokenQueue, output), is(true));
+    assertThat(channel.consume(tokenQueue, output)).isTrue();
     verify(matcher).matchToken(Matchers.eq(tokenQueue), Matchers.anyList());
     verifyNoMoreInteractions(matcher);
     verify(output).add(Matchers.any(Statement.class));

@@ -21,10 +21,7 @@ package org.sonar.duplications.token;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TokenTest {
 
@@ -33,7 +30,7 @@ public class TokenTest {
     Token firstToken = new Token("MyValue", 1, 3);
     Token secondToken = new Token("MyValue", 1, 3);
 
-    assertThat(firstToken, is(secondToken));
+    assertThat(firstToken).isEqualTo(secondToken);
   }
 
   @Test
@@ -41,9 +38,9 @@ public class TokenTest {
     Token firstToken = new Token("MyValue", 1, 3);
     Token secondToken = new Token("MySecondValue", 1, 3);
     Token thirdToken = new Token("MyValue", 3, 3);
-    
-    assertThat(firstToken, not(is(secondToken)));
-    assertThat(firstToken, not(is(thirdToken)));
+
+    assertThat(firstToken).isNotEqualTo(secondToken);
+    assertThat(firstToken).isNotEqualTo(thirdToken);
   }
 
 }

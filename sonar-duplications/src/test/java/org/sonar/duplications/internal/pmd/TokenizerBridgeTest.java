@@ -31,8 +31,7 @@ import net.sourceforge.pmd.cpd.Tokens;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TokenizerBridgeTest {
 
@@ -58,8 +57,8 @@ public class TokenizerBridgeTest {
   public void shouldClearCacheInTokenEntry() {
     bridge.chunk("file.txt", new InputStreamReader(new ByteArrayInputStream(new byte[0]), StandardCharsets.UTF_8));
     TokenEntry token = new TokenEntry("image", "srcId", 0);
-    assertThat(token.getIndex(), is(0));
-    assertThat(token.getIdentifier(), is(1));
+    assertThat(token.getIndex()).isEqualTo(0);
+    assertThat(token.getIdentifier()).isEqualTo(1);
   }
 
   @Test
@@ -68,34 +67,34 @@ public class TokenizerBridgeTest {
     bridge.chunk("file.txt", new InputStreamReader(new ByteArrayInputStream(new byte[0]), StandardCharsets.UTF_8));
     List<TokensLine> lines = bridge.chunk("file.txt", new InputStreamReader(new ByteArrayInputStream(new byte[0]), StandardCharsets.UTF_8));
 
-    assertThat(lines.size(), is(3));
+    assertThat(lines).hasSize(3);
 
     TokensLine line = lines.get(0);
     // 2 tokens on 1 line
-    assertThat(line.getStartUnit(), is(1));
-    assertThat(line.getEndUnit(), is(2));
+    assertThat(line.getStartUnit()).isEqualTo(1);
+    assertThat(line.getEndUnit()).isEqualTo(2);
 
-    assertThat(line.getStartLine(), is(1));
-    assertThat(line.getEndLine(), is(1));
-    assertThat(line.getHashCode(), is("t1t2".hashCode()));
+    assertThat(line.getStartLine()).isEqualTo(1);
+    assertThat(line.getEndLine()).isEqualTo(1);
+    assertThat(line.getHashCode()).isEqualTo("t1t2".hashCode());
 
     line = lines.get(1);
     // 1 token on 2 line
-    assertThat(line.getStartUnit(), is(3));
-    assertThat(line.getEndUnit(), is(3));
+    assertThat(line.getStartUnit()).isEqualTo(3);
+    assertThat(line.getEndUnit()).isEqualTo(3);
 
-    assertThat(line.getStartLine(), is(2));
-    assertThat(line.getEndLine(), is(2));
-    assertThat(line.getHashCode(), is("t3".hashCode()));
+    assertThat(line.getStartLine()).isEqualTo(2);
+    assertThat(line.getEndLine()).isEqualTo(2);
+    assertThat(line.getHashCode()).isEqualTo("t3".hashCode());
 
     line = lines.get(2);
     // 3 tokens on 4 line
-    assertThat(line.getStartUnit(), is(4));
-    assertThat(line.getEndUnit(), is(6));
+    assertThat(line.getStartUnit()).isEqualTo(4);
+    assertThat(line.getEndUnit()).isEqualTo(6);
 
-    assertThat(line.getStartLine(), is(4));
-    assertThat(line.getEndLine(), is(4));
-    assertThat(line.getHashCode(), is("t1t3t3".hashCode()));
+    assertThat(line.getStartLine()).isEqualTo(4);
+    assertThat(line.getEndLine()).isEqualTo(4);
+    assertThat(line.getHashCode()).isEqualTo("t1t3t3".hashCode());
   }
 
 }

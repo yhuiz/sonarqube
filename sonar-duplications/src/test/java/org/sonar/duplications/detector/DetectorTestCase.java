@@ -33,11 +33,8 @@ import org.sonar.duplications.index.ClonePart;
 import org.sonar.duplications.index.MemoryCloneIndex;
 import org.sonar.duplications.junit.TestNamePrinter;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -93,11 +90,11 @@ public abstract class DetectorTestCase {
     print(result);
     assertEquals(2, result.size());
 
-    assertThat(result, hasCloneGroup(4,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(4,
       newClonePart("x", 1, 4),
       newClonePart("y", 0, 4)));
 
-    assertThat(result, hasCloneGroup(2,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2,
       newClonePart("x", 2, 2),
       newClonePart("y", 1, 2),
       newClonePart("z", 0, 2)));
@@ -125,13 +122,13 @@ public abstract class DetectorTestCase {
     List<CloneGroup> clones = detect(cloneIndex, fileBlocks);
 
     print(clones);
-    assertThat(clones.size(), is(2));
+    assertThat(clones).hasSize(2);
 
-    assertThat(clones, hasCloneGroup(4,
+    assertThat(clones).haveAtLeastOne(hasCloneGroup(4,
       newClonePart("c", 1, 4),
       newClonePart("a", 0, 4)));
 
-    assertThat(clones, hasCloneGroup(2,
+    assertThat(clones).haveAtLeastOne(hasCloneGroup(2,
       newClonePart("c", 2, 2),
       newClonePart("a", 1, 2),
       newClonePart("b", 0, 2)));
@@ -160,17 +157,17 @@ public abstract class DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertThat(result.size(), is(3));
+    assertThat(result).hasSize(3);
 
-    assertThat(result, hasCloneGroup(4,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(4,
       newClonePart("a", 2, 4),
       newClonePart("b", 0, 4)));
 
-    assertThat(result, hasCloneGroup(3,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(3,
       newClonePart("a", 4, 3),
       newClonePart("c", 0, 3)));
 
-    assertThat(result, hasCloneGroup(2,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2,
       newClonePart("a", 4, 2),
       newClonePart("b", 2, 2),
       newClonePart("c", 0, 2)));
@@ -197,9 +194,9 @@ public abstract class DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertThat(result.size(), is(1));
+    assertThat(result).hasSize(1);
 
-    assertThat(result, hasCloneGroup(3,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(3,
       newClonePart("a", 0, 3),
       newClonePart("b", 0, 3),
       newClonePart("b", 4, 3),
@@ -225,11 +222,8 @@ public abstract class DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertThat(result.size(), is(1));
-
-    assertThat(result, hasCloneGroup(2,
-      newClonePart("a", 0, 2),
-      newClonePart("a", 3, 2)));
+    assertThat(result).hasSize(1);
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2, newClonePart("a", 0, 2), newClonePart("a", 3, 2)));
   }
 
   /**
@@ -253,13 +247,13 @@ public abstract class DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertThat(result.size(), is(2));
+    assertThat(result).hasSize(2);
 
-    assertThat(result, hasCloneGroup(3,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(3,
       newClonePart("a", 0, 3),
       newClonePart("b", 0, 3)));
 
-    assertThat(result, hasCloneGroup(2,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2,
       newClonePart("a", 0, 2),
       newClonePart("b", 0, 2),
       newClonePart("b", 2, 2)));
@@ -285,13 +279,13 @@ public abstract class DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertThat(result.size(), is(2));
+    assertThat(result).hasSize(2);
 
-    assertThat(result, hasCloneGroup(6,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(6,
       newClonePart("a", 0, 6),
       newClonePart("b", 0, 6)));
 
-    assertThat(result, hasCloneGroup(5,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(5,
       newClonePart("a", 0, 5),
       newClonePart("b", 0, 5),
       newClonePart("b", 2, 5)));
@@ -319,9 +313,9 @@ public abstract class DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertThat(result.size(), is(1));
+    assertThat(result).hasSize(1);
 
-    assertThat(result, hasCloneGroup(2,
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2,
       newClonePart("a", 0, 2),
       newClonePart("b", 0, 2)));
   }
@@ -348,7 +342,7 @@ public abstract class DetectorTestCase {
   @Test
   public void shouldReturnEmptyListWhenNoBlocksForFile() {
     List<CloneGroup> result = detect(null, new Block[0]);
-    assertThat(result, sameInstance(Collections.EMPTY_LIST));
+    assertThat(result).isSameAs(Collections.EMPTY_LIST);
   }
 
   /**
@@ -370,9 +364,9 @@ public abstract class DetectorTestCase {
     List<CloneGroup> clones = detect(cloneIndex, fileBlocks);
 
     print(clones);
-    assertThat(clones.size(), is(1));
+    assertThat(clones).hasSize(1);
 
-    assertThat(clones, hasCloneGroup(3,
+    assertThat(clones).haveAtLeastOne(hasCloneGroup(3,
       newClonePart("a", 0, 3),
       newClonePart("b", 0, 3)));
   }
@@ -405,15 +399,14 @@ public abstract class DetectorTestCase {
     List<CloneGroup> clones = detect(cloneIndex, fileBlocks);
 
     print(clones);
-    assertThat(clones.size(), is(1));
+    assertThat(clones).hasSize(1);
     Iterator<CloneGroup> clonesIterator = clones.iterator();
 
     CloneGroup clone = clonesIterator.next();
-    assertThat(clone.getCloneUnitLength(), is(1));
-    assertThat(clone.getCloneParts().size(), is(2));
-    assertThat(clone.getOriginPart(), is(new ClonePart("a", 0, 0, 1)));
-    assertThat(clone.getCloneParts(), hasItem(new ClonePart("a", 0, 0, 1)));
-    assertThat(clone.getCloneParts(), hasItem(new ClonePart("a", 2, 0, 1)));
+    assertThat(clone.getCloneUnitLength()).isEqualTo(1);
+    assertThat(clone.getCloneParts()).hasSize(2);
+    assertThat(clone.getOriginPart()).isEqualTo(new ClonePart("a", 0, 0, 1));
+    assertThat(clone.getCloneParts()).contains(new ClonePart("a", 0, 0, 1), new ClonePart("a", 2, 0, 1));
   }
 
   protected static void print(List<CloneGroup> clones) {

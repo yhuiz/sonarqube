@@ -22,9 +22,7 @@ package net.sourceforge.pmd.cpd;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TokenEntryTest {
 
@@ -36,17 +34,17 @@ public class TokenEntryTest {
   @Test
   public void testNewTokenEntry() {
     TokenEntry entry = new TokenEntry("token1", "src1", 1);
-    assertThat(entry.getValue(), equalTo("token1"));
-    assertThat(entry.getBeginLine(), equalTo(1));
+    assertThat(entry.getValue()).isEqualTo("token1");
+    assertThat(entry.getBeginLine()).isEqualTo(1);
 
     entry = new TokenEntry("token2", "src2", 2);
-    assertThat(entry.getValue(), equalTo("token2"));
-    assertThat(entry.getBeginLine(), equalTo(2));
+    assertThat(entry.getValue()).isEqualTo("token2");
+    assertThat(entry.getBeginLine()).isEqualTo(2);
   }
 
   @Test
   public void testGetEOF() {
-    assertThat(TokenEntry.getEOF(), sameInstance(TokenEntry.getEOF()));
+    assertThat(TokenEntry.getEOF()).isSameAs(TokenEntry.getEOF());
   }
 
 }

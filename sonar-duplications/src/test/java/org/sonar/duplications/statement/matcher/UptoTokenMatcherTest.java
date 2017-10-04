@@ -19,20 +19,18 @@
  */
 package org.sonar.duplications.statement.matcher;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
+import org.sonar.duplications.token.Token;
+import org.sonar.duplications.token.TokenQueue;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-import org.sonar.duplications.token.Token;
-import org.sonar.duplications.token.TokenQueue;
 
 public class UptoTokenMatcherTest {
 
@@ -53,9 +51,9 @@ public class UptoTokenMatcherTest {
     Token t3 = new Token(";", 3, 1);
     TokenQueue tokenQueue = spy(new TokenQueue(Arrays.asList(t1, t2, t3)));
     List<Token> output = mock(List.class);
-    UptoTokenMatcher matcher = new UptoTokenMatcher(new String[] { ";" });
+    UptoTokenMatcher matcher = new UptoTokenMatcher(new String[] {";"});
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(true));
+    assertThat(matcher.matchToken(tokenQueue, output)).isTrue();
     verify(tokenQueue, times(2)).poll();
     verify(tokenQueue).peek();
     verifyNoMoreInteractions(tokenQueue);
@@ -72,10 +70,10 @@ public class UptoTokenMatcherTest {
     Token t4 = new Token("}", 4, 1);
     TokenQueue tokenQueue = spy(new TokenQueue(Arrays.asList(t1, t2, t3, t4)));
     List<Token> output = mock(List.class);
-    UptoTokenMatcher matcher = new UptoTokenMatcher(new String[] { "{", "}" });
+    UptoTokenMatcher matcher = new UptoTokenMatcher(new String[] {"{", "}"});
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(true));
-    assertThat(matcher.matchToken(tokenQueue, output), is(true));
+    assertThat(matcher.matchToken(tokenQueue, output)).isTrue();
+    assertThat(matcher.matchToken(tokenQueue, output)).isTrue();
     verify(tokenQueue, times(4)).poll();
     verify(tokenQueue, times(2)).peek();
     verifyNoMoreInteractions(tokenQueue);
@@ -92,9 +90,9 @@ public class UptoTokenMatcherTest {
     Token t2 = new Token("b", 2, 1);
     TokenQueue tokenQueue = spy(new TokenQueue(Arrays.asList(t1, t2)));
     List<Token> output = mock(List.class);
-    UptoTokenMatcher matcher = new UptoTokenMatcher(new String[] { ";" });
+    UptoTokenMatcher matcher = new UptoTokenMatcher(new String[] {";"});
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(false));
+    assertThat(matcher.matchToken(tokenQueue, output)).isFalse();
     verify(tokenQueue, times(2)).poll();
     verify(tokenQueue, times(2)).peek();
     verifyNoMoreInteractions(tokenQueue);

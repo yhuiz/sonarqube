@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -58,6 +58,6 @@ public class PurgeableAnalysisDtoTest {
   @Test
   public void testToString() {
     PurgeableAnalysisDto dto = new PurgeableAnalysisDto().setAnalysisUuid("u3");
-    assertThat(dto.toString().length(), greaterThan(0));
+    assertThat(dto.toString().length()).isGreaterThan(0);
   }
 }

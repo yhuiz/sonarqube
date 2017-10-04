@@ -19,17 +19,16 @@
  */
 package org.sonar.api.batch;
 
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.test.IsMeasure;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -46,7 +45,7 @@ public class AbstractSumChildrenDecoratorTest {
 
     create(false).decorate(null, context);
 
-    verify(context).saveMeasure(argThat(new IsMeasure(CoreMetrics.LINES, 150.0)));
+    verify(context).saveMeasure(MockitoHamcrest.argThat(new IsMeasure(CoreMetrics.LINES, 150.0)));
   }
 
   @Test
@@ -66,7 +65,7 @@ public class AbstractSumChildrenDecoratorTest {
 
     create(true).decorate(null, context);
 
-    verify(context).saveMeasure(argThat(new IsMeasure(CoreMetrics.LINES, 0.0)));
+    verify(context).saveMeasure(MockitoHamcrest.argThat(new IsMeasure(CoreMetrics.LINES, 0.0)));
   }
 
   private AbstractSumChildrenDecorator create(final boolean zeroIfNoChildMeasures) {

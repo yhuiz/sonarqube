@@ -19,16 +19,15 @@
  */
 package org.sonar.duplications.token;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.sonar.channel.CodeReader;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
-
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.sonar.channel.CodeReader;
 
 public class TokenChannelTest {
 
@@ -38,13 +37,13 @@ public class TokenChannelTest {
     TokenQueue output = mock(TokenQueue.class);
     CodeReader codeReader = new CodeReader("ABCD");
 
-    assertThat(channel.consume(codeReader, output), is(true));
+    assertThat(channel.consume(codeReader, output)).isTrue();
     ArgumentCaptor<Token> token = ArgumentCaptor.forClass(Token.class);
     verify(output).add(token.capture());
-    assertThat(token.getValue(), is(new Token("ABC", 1, 0)));
+    assertThat(token.getValue()).isEqualTo(new Token("ABC", 1, 0));
     verifyNoMoreInteractions(output);
-    assertThat(codeReader.getLinePosition(), is(1));
-    assertThat(codeReader.getColumnPosition(), is(3));
+    assertThat(codeReader.getLinePosition()).isEqualTo(1);
+    assertThat(codeReader.getColumnPosition()).isEqualTo(3);
   }
 
   @Test
@@ -53,13 +52,13 @@ public class TokenChannelTest {
     TokenQueue output = mock(TokenQueue.class);
     CodeReader codeReader = new CodeReader("ABCD");
 
-    assertThat(channel.consume(codeReader, output), is(true));
+    assertThat(channel.consume(codeReader, output)).isTrue();
     ArgumentCaptor<Token> token = ArgumentCaptor.forClass(Token.class);
     verify(output).add(token.capture());
-    assertThat(token.getValue(), is(new Token("normalized", 1, 0)));
+    assertThat(token.getValue()).isEqualTo(new Token("normalized", 1, 0));
     verifyNoMoreInteractions(output);
-    assertThat(codeReader.getLinePosition(), is(1));
-    assertThat(codeReader.getColumnPosition(), is(3));
+    assertThat(codeReader.getLinePosition()).isEqualTo(1);
+    assertThat(codeReader.getColumnPosition()).isEqualTo(3);
   }
 
   @Test
@@ -68,10 +67,10 @@ public class TokenChannelTest {
     TokenQueue output = mock(TokenQueue.class);
     CodeReader codeReader = new CodeReader("123");
 
-    assertThat(channel.consume(new CodeReader("123"), output), is(false));
+    assertThat(channel.consume(new CodeReader("123"), output)).isFalse();
     verifyZeroInteractions(output);
-    assertThat(codeReader.getLinePosition(), is(1));
-    assertThat(codeReader.getColumnPosition(), is(0));
+    assertThat(codeReader.getLinePosition()).isEqualTo(1);
+    assertThat(codeReader.getColumnPosition()).isEqualTo(0);
   }
 
   @Test
@@ -80,13 +79,13 @@ public class TokenChannelTest {
     TokenQueue output = mock(TokenQueue.class);
     CodeReader codeReader = new CodeReader("AB\nCD");
 
-    assertThat(channel.consume(codeReader, output), is(true));
+    assertThat(channel.consume(codeReader, output)).isTrue();
     ArgumentCaptor<Token> token = ArgumentCaptor.forClass(Token.class);
     verify(output).add(token.capture());
-    assertThat(token.getValue(), is(new Token("AB\nC", 1, 0)));
+    assertThat(token.getValue()).isEqualTo(new Token("AB\nC", 1, 0));
     verifyNoMoreInteractions(output);
-    assertThat(codeReader.getLinePosition(), is(2));
-    assertThat(codeReader.getColumnPosition(), is(1));
+    assertThat(codeReader.getLinePosition()).isEqualTo(2);
+    assertThat(codeReader.getColumnPosition()).isEqualTo(1);
   }
 
 }

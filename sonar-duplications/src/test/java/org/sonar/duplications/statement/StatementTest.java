@@ -19,14 +19,12 @@
  */
 package org.sonar.duplications.statement;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.junit.Test;
 import org.sonar.duplications.token.Token;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StatementTest {
 
@@ -43,9 +41,9 @@ public class StatementTest {
   @Test
   public void shouldCreateStatementFromListOfTokens() {
     Statement statement = new Statement(Arrays.asList(new Token("a", 1, 1), new Token("b", 2, 1)));
-    assertThat(statement.getValue(), is("ab"));
-    assertThat(statement.getStartLine(), is(1));
-    assertThat(statement.getEndLine(), is(2));
+    assertThat(statement.getValue()).isEqualTo("ab");
+    assertThat(statement.getStartLine()).isEqualTo(1);
+    assertThat(statement.getEndLine()).isEqualTo(2);
   }
 
 }

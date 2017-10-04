@@ -19,14 +19,12 @@
  */
 package org.sonar.duplications.token;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TokenQueueTest {
 
@@ -44,15 +42,15 @@ public class TokenQueueTest {
   @Test
   public void shouldPeekToken() {
     Token token = tokenQueue.peek();
-    assertThat(token, is(new Token("a", 1, 0)));
-    assertThat(tokenQueue.size(), is(3));
+    assertThat(token).isEqualTo(new Token("a", 1, 0));
+    assertThat(tokenQueue.size()).isEqualTo(3);
   }
 
   @Test
   public void shouldPollToken() {
     Token token = tokenQueue.poll();
-    assertThat(token, is(new Token("a", 1, 0)));
-    assertThat(tokenQueue.size(), is(2));
+    assertThat(token).isEqualTo(new Token("a", 1, 0));
+    assertThat(tokenQueue.size()).isEqualTo(2);
   }
 
   @Test
@@ -61,8 +59,8 @@ public class TokenQueueTest {
     List<Token> pushedTokenList = new ArrayList<>();
     pushedTokenList.add(pushedToken);
     tokenQueue.pushForward(pushedTokenList);
-    assertThat(tokenQueue.peek(), is(pushedToken));
-    assertThat(tokenQueue.size(), is(4));
+    assertThat(tokenQueue.peek()).isEqualTo(pushedToken);
+    assertThat(tokenQueue.size()).isEqualTo(4);
   }
 
 }

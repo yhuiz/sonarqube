@@ -19,19 +19,17 @@
  */
 package org.sonar.duplications.statement.matcher;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
+import org.sonar.duplications.token.Token;
+import org.sonar.duplications.token.TokenQueue;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-import org.sonar.duplications.token.Token;
-import org.sonar.duplications.token.TokenQueue;
 
 public class ExactTokenMatcherTest {
 
@@ -48,7 +46,7 @@ public class ExactTokenMatcherTest {
     List<Token> output = mock(List.class);
     ExactTokenMatcher matcher = new ExactTokenMatcher("a");
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(true));
+    assertThat(matcher.matchToken(tokenQueue, output)).isTrue();
     verify(tokenQueue).isNextTokenValue("a");
     verify(tokenQueue).poll();
     verifyNoMoreInteractions(tokenQueue);
@@ -64,7 +62,7 @@ public class ExactTokenMatcherTest {
     List<Token> output = mock(List.class);
     ExactTokenMatcher matcher = new ExactTokenMatcher("b");
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(false));
+    assertThat(matcher.matchToken(tokenQueue, output)).isFalse();
     verify(tokenQueue).isNextTokenValue("b");
     verifyNoMoreInteractions(tokenQueue);
     verifyNoMoreInteractions(output);

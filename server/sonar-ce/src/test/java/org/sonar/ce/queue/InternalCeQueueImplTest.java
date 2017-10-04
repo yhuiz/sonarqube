@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import org.hamcrest.Matchers;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -390,7 +390,8 @@ public class InternalCeQueueImplTest {
 
   @Test
   public void peek_resets_to_pending_any_task_in_progress_for_specified_worker_uuid_and_updates_updatedAt_no_matter_execution_count() {
-    insertPending("u0", "doesn't matter", 0); // add a pending one that will be picked so that u1 isn't peek and status reset is visible in DB
+    insertPending("u0", "doesn't matter", 0); // add a pending one that will be picked so that u1 isn't peek and status reset is visible in
+                                              // DB
     CeQueueDto u1 = insertPending("u1", WORKER_UUID_1, 2);// won't be peeked because it's worn-out
     CeQueueDto u2 = insertInProgress("u2", WORKER_UUID_1, 3);// will be reset but won't be picked because it's worn-out
     CeQueueDto u3 = insertPending("u3", WORKER_UUID_1, 1);// will be picked-because older than any of the reset ones
@@ -406,7 +407,8 @@ public class InternalCeQueueImplTest {
 
   @Test
   public void peek_resets_to_pending_any_task_in_progress_for_specified_worker_uuid_and_only_this_uuid() {
-    insertPending("u0", "doesn't matter", 0); // add a pending one that will be picked so that u1 isn't peek and status reset is visible in DB
+    insertPending("u0", "doesn't matter", 0); // add a pending one that will be picked so that u1 isn't peek and status reset is visible in
+                                              // DB
     CeQueueDto u1 = insertInProgress("u1", WORKER_UUID_1, 3);
     CeQueueDto u2 = insertInProgress("u2", WORKER_UUID_2, 3);
     CeQueueDto u3 = insertInProgress("u3", WORKER_UUID_1, 3);
@@ -527,7 +529,7 @@ public class InternalCeQueueImplTest {
   @Test
   public void fail_to_cancel_if_in_progress() throws Exception {
     expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.startsWith("Task is in progress and can't be canceled"));
+    expectedException.expectMessage(CoreMatchers.startsWith("Task is in progress and can't be canceled"));
 
     CeTask task = submit(CeTaskTypes.REPORT, "PROJECT_1");
     underTest.peek(WORKER_UUID_2);

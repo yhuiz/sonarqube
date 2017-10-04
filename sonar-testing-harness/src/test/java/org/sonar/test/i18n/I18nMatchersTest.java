@@ -19,11 +19,10 @@
  */
 package org.sonar.test.i18n;
 
+import java.io.File;
 import org.junit.Test;
 
-import java.io.File;
-
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -41,7 +40,7 @@ public class I18nMatchersTest {
       assertThat("myPlugin_fr.properties", isBundleUpToDate());
       assertTrue(new File("target/l10n/myPlugin_fr.properties.report.txt").exists());
     } catch (AssertionError e) {
-      assertThat(e.getMessage(), containsString("Missing translations are:\nsecond.prop"));
+      assertThat(e.getMessage()).contains("Missing translations are:\nsecond.prop");
     }
   }
 

@@ -19,21 +19,20 @@
  */
 package org.sonar.test.i18n;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.SortedMap;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.SortedMap;
-
 import static junit.framework.TestCase.fail;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThat;
 
 public class BundleSynchronizedMatcherTest {
 
@@ -50,42 +49,42 @@ public class BundleSynchronizedMatcherTest {
   @Test
   public void shouldMatch() {
     assertThat("myPlugin_fr_CA.properties", matcher);
-    assertFalse(new File("target/l10n/myPlugin_fr_CA.properties.report.txt").exists());
+    assertThat(new File("target/l10n/myPlugin_fr_CA.properties.report.txt")).doesNotExist();
   }
 
   @Test
   public void shouldMatchEvenWithAdditionalKeys() {
     assertThat("myPlugin_fr_QB.properties", matcher);
-    assertFalse(new File("target/l10n/myPlugin_fr_CA.properties.report.txt").exists());
+    assertThat(new File("target/l10n/myPlugin_fr_CA.properties.report.txt")).doesNotExist();
   }
 
   @Test
   public void shouldNotMatch() {
     try {
       assertThat("myPlugin_fr.properties", matcher);
-      assertTrue(new File("target/l10n/myPlugin_fr.properties.report.txt").exists());
+      assertThat(new File("target/l10n/myPlugin_fr.properties.report.txt")).exists();
     } catch (AssertionError e) {
-      assertThat(e.getMessage(), containsString("Missing translations are:\nsecond.prop"));
-      assertThat(e.getMessage(), containsString("The following translations do not exist in the reference bundle:\nfourth.prop"));
+      assertThat(e.getMessage()).contains("Missing translations are:\nsecond.prop");
+      assertThat(e.getMessage()).contains("The following translations do not exist in the reference bundle:\nfourth.prop");
     }
   }
 
   @Test
   public void shouldNotMatchIfNotString() {
-    assertThat(matcher.matches(3), is(false));
+    assertThat(matcher.matches(3)).isFalse();
   }
 
   @Test
   public void testGetBundleFileFromClasspath() {
     // OK
-    assertThat(BundleSynchronizedMatcher.getBundleFileInputStream("myPlugin_fr.properties"), notNullValue());
+    assertThat(BundleSynchronizedMatcher.getBundleFileInputStream("myPlugin_fr.properties")).isNotNull();
 
     // KO
     try {
       BundleSynchronizedMatcher.getBundleFileInputStream("unexistingBundle.properties");
       fail();
     } catch (AssertionError e) {
-      assertThat(e.getMessage(), startsWith("File 'unexistingBundle.properties' does not exist in '/org/sonar/l10n/'."));
+      assertThat(e.getMessage()).startsWith("File 'unexistingBundle.properties' does not exist in '/org/sonar/l10n/'.");
     }
   }
 
@@ -95,15 +94,15 @@ public class BundleSynchronizedMatcherTest {
       BundleSynchronizedMatcher.getDefaultBundleFileInputStream("unexistingBundle_fr.properties");
       fail();
     } catch (AssertionError e) {
-      assertThat(e.getMessage(), startsWith("Default bundle 'unexistingBundle.properties' could not be found: add a dependency to the corresponding plugin in your POM."));
+      assertThat(e.getMessage()).startsWith("Default bundle 'unexistingBundle.properties' could not be found: add a dependency to the corresponding plugin in your POM.");
     }
   }
 
   @Test
   public void testExtractDefaultBundleName() throws Exception {
     // OK
-    assertThat(BundleSynchronizedMatcher.extractDefaultBundleName("myPlugin_fr.properties"), is("myPlugin.properties"));
-    assertThat(BundleSynchronizedMatcher.extractDefaultBundleName("myPlugin_fr_QB.properties"), is("myPlugin.properties"));
+    assertThat(BundleSynchronizedMatcher.extractDefaultBundleName("myPlugin_fr.properties")).isEqualTo("myPlugin.properties");
+    assertThat(BundleSynchronizedMatcher.extractDefaultBundleName("myPlugin_fr_QB.properties")).isEqualTo("myPlugin.properties");
 
     // KO
 
@@ -111,7 +110,7 @@ public class BundleSynchronizedMatcherTest {
       BundleSynchronizedMatcher.extractDefaultBundleName("myPlugin.properties");
       fail();
     } catch (AssertionError e) {
-      assertThat(e.getMessage(), startsWith("The bundle 'myPlugin.properties' is a default bundle (without locale), so it can't be compared."));
+      assertThat(e.getMessage()).startsWith("The bundle 'myPlugin.properties' is a default bundle (without locale), so it can't be compared.");
     }
   }
 
@@ -123,11 +122,11 @@ public class BundleSynchronizedMatcherTest {
 
     try {
       SortedMap<String, String> diffs = BundleSynchronizedMatcher.retrieveMissingTranslations(frBundleIS, defaultBundleIS);
-      assertThat(diffs.size(), is(1));
-      assertThat(diffs.keySet(), hasItem("second.prop"));
+      assertThat(diffs).hasSize(1);
+      assertThat(diffs.keySet()).contains("second.prop");
 
       diffs = BundleSynchronizedMatcher.retrieveMissingTranslations(qbBundleIS, defaultBundleIS);
-      assertThat(diffs.size(), is(0));
+      assertThat(diffs).isEmpty();
     } finally {
       IOUtils.closeQuietly(defaultBundleIS);
       IOUtils.closeQuietly(frBundleIS);

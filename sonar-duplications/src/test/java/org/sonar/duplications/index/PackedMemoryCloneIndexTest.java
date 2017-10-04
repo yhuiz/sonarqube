@@ -19,20 +19,16 @@
  */
 package org.sonar.duplications.index;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.duplications.block.Block;
 import org.sonar.duplications.block.ByteArray;
 import org.sonar.duplications.index.PackedMemoryCloneIndex.ResourceBlocks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 
 public class PackedMemoryCloneIndexTest {
 
@@ -55,14 +51,14 @@ public class PackedMemoryCloneIndexTest {
     index.insert(newBlock("e", 3));
 
     assertThat(index.noResources()).isEqualTo(5);
-    assertThat(index.getBySequenceHash(new ByteArray(1L)).size(), is(5));
-    assertThat(index.getBySequenceHash(new ByteArray(2L)).size(), is(2));
-    assertThat(index.getBySequenceHash(new ByteArray(3L)).size(), is(1));
-    assertThat(index.getBySequenceHash(new ByteArray(4L)).size(), is(0));
-    assertThat(index.getByResourceId("a").size(), is(2));
-    assertThat(index.getByResourceId("b").size(), is(1));
-    assertThat(index.getByResourceId("e").size(), is(3));
-    assertThat(index.getByResourceId("does not exist").size(), is(0));
+    assertThat(index.getBySequenceHash(new ByteArray(1L))).hasSize(5);
+    assertThat(index.getBySequenceHash(new ByteArray(2L))).hasSize(2);
+    assertThat(index.getBySequenceHash(new ByteArray(3L))).hasSize(1);
+    assertThat(index.getBySequenceHash(new ByteArray(4L))).hasSize(0);
+    assertThat(index.getByResourceId("a")).hasSize(2);
+    assertThat(index.getByResourceId("b")).hasSize(1);
+    assertThat(index.getByResourceId("e")).hasSize(3);
+    assertThat(index.getByResourceId("does not exist")).hasSize(0);
   }
 
   /**
@@ -76,12 +72,12 @@ public class PackedMemoryCloneIndexTest {
     index.insert(newBlock("c", 1));
     ByteArray requestedHash = new ByteArray(1L);
     Collection<Block> blocks = index.getBySequenceHash(requestedHash);
-    assertThat(blocks.size(), is(3));
+    assertThat(blocks).hasSize(3);
     for (Block block : blocks) {
-      assertThat(block.getBlockHash(), sameInstance(requestedHash));
+      assertThat(block.getBlockHash()).isSameAs(requestedHash);
     }
   }
-  
+
   @Test
   public void iterate() {
     index.insert(newBlock("a", 1));
@@ -89,25 +85,25 @@ public class PackedMemoryCloneIndexTest {
     index.insert(newBlock("b", 1));
     index.insert(newBlock("c", 2));
     index.insert(newBlock("a", 2));
-    
+
     Iterator<ResourceBlocks> it = index.iterator();
-    
+
     ArrayList<ResourceBlocks> resourcesBlocks = new ArrayList<>();
-    
-    while(it.hasNext()) {
+
+    while (it.hasNext()) {
       resourcesBlocks.add(it.next());
     }
-    
+
     assertThat(resourcesBlocks).hasSize(3);
-    
+
     assertThat(resourcesBlocks.get(0).resourceId()).isEqualTo("a");
     assertThat(resourcesBlocks.get(1).resourceId()).isEqualTo("b");
     assertThat(resourcesBlocks.get(2).resourceId()).isEqualTo("c");
-    
+
     assertThat(resourcesBlocks.get(0).blocks()).hasSize(2);
     assertThat(resourcesBlocks.get(1).blocks()).hasSize(1);
     assertThat(resourcesBlocks.get(2).blocks()).hasSize(2);
-    
+
   }
 
   /**
@@ -119,7 +115,7 @@ public class PackedMemoryCloneIndexTest {
     CloneIndex index = new PackedMemoryCloneIndex(8, 1);
     index.insert(newBlock("a", 1));
     index.insert(newBlock("a", 2));
-    assertThat(index.getByResourceId("a").size(), is(2));
+    assertThat(index.getByResourceId("a")).hasSize(2);
   }
 
   /**
@@ -144,11 +140,11 @@ public class PackedMemoryCloneIndexTest {
 
   private static Block newBlock(String resourceId, long hash) {
     return Block.builder()
-        .setResourceId(resourceId)
-        .setBlockHash(new ByteArray(hash))
-        .setIndexInFile(1)
-        .setLines(1, 2)
-        .build();
+      .setResourceId(resourceId)
+      .setBlockHash(new ByteArray(hash))
+      .setIndexInFile(1)
+      .setLines(1, 2)
+      .build();
   }
 
 }

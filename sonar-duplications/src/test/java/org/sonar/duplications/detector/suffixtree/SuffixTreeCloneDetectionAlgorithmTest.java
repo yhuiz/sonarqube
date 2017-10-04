@@ -19,6 +19,9 @@
  */
 package org.sonar.duplications.detector.suffixtree;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.sonar.duplications.block.Block;
 import org.sonar.duplications.block.ByteArray;
@@ -26,13 +29,8 @@ import org.sonar.duplications.detector.DetectorTestCase;
 import org.sonar.duplications.index.CloneGroup;
 import org.sonar.duplications.index.CloneIndex;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.sonar.duplications.detector.CloneGroupMatcher.hasCloneGroup;
 
 public class SuffixTreeCloneDetectionAlgorithmTest extends DetectorTestCase {
@@ -46,7 +44,7 @@ public class SuffixTreeCloneDetectionAlgorithmTest extends DetectorTestCase {
     CloneIndex index = createIndex();
     Block[] fileBlocks = newBlocks("a", "1 2 3");
     List<CloneGroup> result = detect(index, fileBlocks);
-    assertThat(result, sameInstance(Collections.EMPTY_LIST));
+    assertThat(result).isSameAs(Collections.EMPTY_LIST);
   }
 
   /**
@@ -92,18 +90,18 @@ public class SuffixTreeCloneDetectionAlgorithmTest extends DetectorTestCase {
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
-    assertEquals(2, result.size());
+    assertThat(result).hasSize(2);
 
-    assertThat(result, hasCloneGroup(2,
-        newClonePart("x", 5, 2),
-        newClonePart("x", 6, 2)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2,
+      newClonePart("x", 5, 2),
+      newClonePart("x", 6, 2)));
 
-    assertThat(result, hasCloneGroup(1,
-        newClonePart("x", 1, 1),
-        newClonePart("x", 3, 1),
-        newClonePart("x", 5, 1),
-        newClonePart("x", 6, 1),
-        newClonePart("x", 7, 1)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(1,
+      newClonePart("x", 1, 1),
+      newClonePart("x", 3, 1),
+      newClonePart("x", 5, 1),
+      newClonePart("x", 6, 1),
+      newClonePart("x", 7, 1)));
   }
 
   /**
@@ -130,17 +128,17 @@ public class SuffixTreeCloneDetectionAlgorithmTest extends DetectorTestCase {
     print(result);
     assertEquals(2, result.size());
 
-    assertThat(result, hasCloneGroup(4,
-        newClonePart("x", 10, 4),
-        newClonePart("x", 12, 4)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(4,
+      newClonePart("x", 10, 4),
+      newClonePart("x", 12, 4)));
 
-    assertThat(result, hasCloneGroup(2,
-        newClonePart("x", 1, 2),
-        newClonePart("x", 4, 2),
-        newClonePart("x", 7, 2),
-        newClonePart("x", 10, 2),
-        newClonePart("x", 12, 2),
-        newClonePart("x", 14, 2)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(2,
+      newClonePart("x", 1, 2),
+      newClonePart("x", 4, 2),
+      newClonePart("x", 7, 2),
+      newClonePart("x", 10, 2),
+      newClonePart("x", 12, 2),
+      newClonePart("x", 14, 2)));
   }
 
   /**
@@ -164,32 +162,31 @@ public class SuffixTreeCloneDetectionAlgorithmTest extends DetectorTestCase {
   @Test
   public void myTest3() {
     CloneIndex index = createIndex(
-        newBlocks("b", "4 3 2"),
-        newBlocks("c", "4 3 1")
-        );
+      newBlocks("b", "4 3 2"),
+      newBlocks("c", "4 3 1"));
     Block[] fileBlocks = newBlocks("a", "1 2 3 4");
     List<CloneGroup> result = detect(index, fileBlocks);
 
     print(result);
     assertEquals(4, result.size());
 
-    assertThat(result, hasCloneGroup(1,
-        newClonePart("a", 0, 1),
-        newClonePart("c", 2, 1)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(1,
+      newClonePart("a", 0, 1),
+      newClonePart("c", 2, 1)));
 
-    assertThat(result, hasCloneGroup(1,
-        newClonePart("a", 1, 1),
-        newClonePart("b", 2, 1)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(1,
+      newClonePart("a", 1, 1),
+      newClonePart("b", 2, 1)));
 
-    assertThat(result, hasCloneGroup(1,
-        newClonePart("a", 2, 1),
-        newClonePart("b", 1, 1),
-        newClonePart("c", 1, 1)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(1,
+      newClonePart("a", 2, 1),
+      newClonePart("b", 1, 1),
+      newClonePart("c", 1, 1)));
 
-    assertThat(result, hasCloneGroup(1,
-        newClonePart("a", 3, 1),
-        newClonePart("b", 0, 1),
-        newClonePart("c", 0, 1)));
+    assertThat(result).haveAtLeastOne(hasCloneGroup(1,
+      newClonePart("a", 3, 1),
+      newClonePart("b", 0, 1),
+      newClonePart("c", 0, 1)));
   }
 
   @Override

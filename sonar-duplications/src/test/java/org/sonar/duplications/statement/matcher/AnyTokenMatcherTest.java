@@ -19,19 +19,17 @@
  */
 package org.sonar.duplications.statement.matcher;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
+import org.sonar.duplications.token.Token;
+import org.sonar.duplications.token.TokenQueue;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-import org.sonar.duplications.token.Token;
-import org.sonar.duplications.token.TokenQueue;
 
 public class AnyTokenMatcherTest {
 
@@ -43,7 +41,7 @@ public class AnyTokenMatcherTest {
     List<Token> output = mock(List.class);
     AnyTokenMatcher matcher = new AnyTokenMatcher();
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(true));
+    assertThat(matcher.matchToken(tokenQueue, output)).isTrue();
     verify(tokenQueue).poll();
     verifyNoMoreInteractions(tokenQueue);
     verify(output).add(t1);

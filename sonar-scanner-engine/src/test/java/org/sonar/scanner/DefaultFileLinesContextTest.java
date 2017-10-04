@@ -32,9 +32,6 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.scanner.scan.measure.MeasureCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.api.measures.CoreMetrics.COMMENT_LINES_DATA_KEY;
@@ -147,18 +144,18 @@ public class DefaultFileLinesContextTest {
   public void shouldLoadIntValues() {
     when(measureCache.byMetric("foo:src/foo.php", HITS_METRIC_KEY)).thenReturn(new DefaultMeasure().withValue("1=2;3=4"));
 
-    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 1), is(2));
-    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 3), is(4));
-    assertThat("no measure on line", fileLineMeasures.getIntValue(HITS_METRIC_KEY, 2), nullValue());
+    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 1)).isEqualTo(2);
+    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 3)).isEqualTo(4);
+    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 2)).as("no measure on line").isNull();
   }
 
   @Test
   public void shouldLoadStringValues() {
     when(measureCache.byMetric("foo:src/foo.php", AUTHOR_METRIC_KEY)).thenReturn(new DefaultMeasure().withValue("1=simon;3=evgeny"));
 
-    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 1), is("simon"));
-    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 3), is("evgeny"));
-    assertThat("no measure on line", fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 2), nullValue());
+    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 1)).isEqualTo("simon");
+    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 3)).isEqualTo("evgeny");
+    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 2)).as("no measure on line").isNull();
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -171,8 +168,8 @@ public class DefaultFileLinesContextTest {
 
   @Test
   public void shouldNotFailIfNoMeasureInIndex() {
-    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 1), nullValue());
-    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 1), nullValue());
+    assertThat(fileLineMeasures.getIntValue(HITS_METRIC_KEY, 1)).isNull();
+    assertThat(fileLineMeasures.getStringValue(AUTHOR_METRIC_KEY, 1)).isNull();
   }
 
 }

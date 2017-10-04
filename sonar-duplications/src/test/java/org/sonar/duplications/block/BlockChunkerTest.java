@@ -19,14 +19,11 @@
  */
 package org.sonar.duplications.block;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.List;
-
 import org.junit.Test;
 import org.sonar.duplications.statement.Statement;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BlockChunkerTest extends BlockChunkerTestCase {
 
@@ -44,12 +41,12 @@ public class BlockChunkerTest extends BlockChunkerTestCase {
     List<Statement> statements = createStatementsFromStrings("aaaaaa", "bbbbbb", "cccccc", "dddddd", "eeeeee");
     BlockChunker blockChunker = createChunkerWithBlockSize(3);
     List<Block> blocks = blockChunker.chunk("resource", statements);
-    assertThat(blocks.get(0).getBlockHash(), equalTo(hash("aaaaaa", "bbbbbb", "cccccc")));
-    assertThat(blocks.get(1).getBlockHash(), equalTo(hash("bbbbbb", "cccccc", "dddddd")));
-    assertThat(blocks.get(2).getBlockHash(), equalTo(hash("cccccc", "dddddd", "eeeeee")));
-    assertThat(blocks.get(0).getBlockHash().toString(), is("fffffeb6ae1af4c0"));
-    assertThat(blocks.get(1).getBlockHash().toString(), is("fffffebd8512d120"));
-    assertThat(blocks.get(2).getBlockHash().toString(), is("fffffec45c0aad80"));
+    assertThat(blocks.get(0).getBlockHash()).isEqualTo(hash("aaaaaa", "bbbbbb", "cccccc"));
+    assertThat(blocks.get(1).getBlockHash()).isEqualTo(hash("bbbbbb", "cccccc", "dddddd"));
+    assertThat(blocks.get(2).getBlockHash()).isEqualTo(hash("cccccc", "dddddd", "eeeeee"));
+    assertThat(blocks.get(0).getBlockHash().toString()).isEqualTo("fffffeb6ae1af4c0");
+    assertThat(blocks.get(1).getBlockHash().toString()).isEqualTo("fffffebd8512d120");
+    assertThat(blocks.get(2).getBlockHash().toString()).isEqualTo("fffffec45c0aad80");
   }
 
   private ByteArray hash(String... statements) {

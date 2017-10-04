@@ -19,13 +19,10 @@
  */
 package org.sonar.duplications.index;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.Arrays;
-
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataUtilsTest {
 
@@ -39,28 +36,28 @@ public class DataUtilsTest {
     }
     Arrays.sort(expected);
     DataUtils.sort(new SimpleSortable(actual, actual.length));
-    assertThat(actual, equalTo(expected));
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
   public void testSearch() {
-    int[] a = new int[] { 1, 2, 4, 4, 4, 5, 0 };
+    int[] a = new int[] {1, 2, 4, 4, 4, 5, 0};
     SimpleSortable sortable = new SimpleSortable(a, a.length - 1);
     // search 4
     a[a.length - 1] = 4;
-    assertThat(DataUtils.binarySearch(sortable), is(2));
+    assertThat(DataUtils.binarySearch(sortable)).isEqualTo(2);
     // search 5
     a[a.length - 1] = 5;
-    assertThat(DataUtils.binarySearch(sortable), is(5));
+    assertThat(DataUtils.binarySearch(sortable)).isEqualTo(5);
     // search -5
     a[a.length - 1] = -5;
-    assertThat(DataUtils.binarySearch(sortable), is(0));
+    assertThat(DataUtils.binarySearch(sortable)).isEqualTo(0);
     // search 10
     a[a.length - 1] = 10;
-    assertThat(DataUtils.binarySearch(sortable), is(6));
+    assertThat(DataUtils.binarySearch(sortable)).isEqualTo(6);
     // search 3
     a[a.length - 1] = 3;
-    assertThat(DataUtils.binarySearch(sortable), is(2));
+    assertThat(DataUtils.binarySearch(sortable)).isEqualTo(2);
   }
 
   class SimpleSortable implements DataUtils.Sortable {

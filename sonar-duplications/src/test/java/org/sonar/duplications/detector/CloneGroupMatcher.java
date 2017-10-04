@@ -19,30 +19,26 @@
  */
 package org.sonar.duplications.detector;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import java.util.function.Predicate;
+import org.assertj.core.api.Condition;
 import org.sonar.duplications.index.CloneGroup;
 import org.sonar.duplications.index.ClonePart;
 
-import static org.hamcrest.Matchers.hasItem;
+public class CloneGroupMatcher {
 
-public class CloneGroupMatcher extends TypeSafeMatcher<CloneGroup> {
-
-  public static Matcher<Iterable<? super CloneGroup>> hasCloneGroup(int expectedLen, ClonePart... expectedParts) {
-    return hasItem(new CloneGroupMatcher(expectedLen, expectedParts));
+  public static Condition<CloneGroup> hasCloneGroup(int expectedLen, ClonePart... expectedParts) {
+    StringBuilder builder = new StringBuilder();
+    for (ClonePart part : expectedParts) {
+      builder.append(part).append(" - ");
+    }
+    builder.append(expectedLen);
+    Predicate<CloneGroup> p = cloneGroup -> {
+      return check(expectedLen, cloneGroup, expectedParts);
+    };
+    return new Condition<>(p, builder.toString());
   }
 
-  private final int expectedLen;
-  private final ClonePart[] expectedParts;
-
-  private CloneGroupMatcher(int expectedLen, ClonePart... expectedParts) {
-    this.expectedLen = expectedLen;
-    this.expectedParts = expectedParts;
-  }
-
-  @Override
-  public boolean matchesSafely(CloneGroup cloneGroup) {
+  private static boolean check(int expectedLen, CloneGroup cloneGroup, ClonePart... expectedParts) {
     // Check length
     if (expectedLen != cloneGroup.getCloneUnitLength()) {
       return false;
@@ -69,15 +65,6 @@ public class CloneGroupMatcher extends TypeSafeMatcher<CloneGroup> {
       }
     }
     return true;
-  }
-
-  public void describeTo(Description description) {
-    StringBuilder builder = new StringBuilder();
-    for (ClonePart part : expectedParts) {
-      builder.append(part).append(" - ");
-    }
-    builder.append(expectedLen);
-    description.appendText(builder.toString());
   }
 
 }

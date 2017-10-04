@@ -26,19 +26,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.sonar.duplications.DuplicationsTestUtil;
 import org.sonar.duplications.token.Token;
 import org.sonar.duplications.token.TokenChunker;
 import org.sonar.duplications.token.TokenQueue;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaTokenProducerTest {
 
@@ -49,7 +45,7 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldIgnoreWhitespaces() {
-    assertThat(chunk(" \t\f\n\r"), isTokens());
+    assertThat(chunk(" \t\f\n\r")).containsExactly();
   }
 
   /**
@@ -57,15 +53,15 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldIgnoreEndOfLineComment() {
-    assertThat(chunk("// This is a comment"), isTokens());
-    assertThat(chunk("// This is a comment \n and_this_is_not"), isTokens(new Token("and_this_is_not", 2, 1)));
+    assertThat(chunk("// This is a comment")).containsExactly();
+    assertThat(chunk("// This is a comment \n and_this_is_not")).containsExactly(new Token("and_this_is_not", 2, 1));
   }
 
   @Test
   public void shouldIgnoreTraditionalComment() {
-    assertThat(chunk("/* This is a comment \n and the second line */"), isTokens());
-    assertThat(chunk("/** This is a javadoc \n and the second line */"), isTokens());
-    assertThat(chunk("/* this \n comment /* \n // /** ends \n here: */"), isTokens());
+    assertThat(chunk("/* This is a comment \n and the second line */")).containsExactly();
+    assertThat(chunk("/** This is a javadoc \n and the second line */")).containsExactly();
+    assertThat(chunk("/* this \n comment /* \n // /** ends \n here: */")).containsExactly();
   }
 
   /**
@@ -73,23 +69,23 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldPreserveIdentifiers() {
-    assertThat(chunk("String"), isTokens(new Token("String", 1, 0)));
-    assertThat(chunk("i3"), isTokens(new Token("i3", 1, 0)));
-    assertThat(chunk("MAX_VALUE"), isTokens(new Token("MAX_VALUE", 1, 0)));
-    assertThat(chunk("isLetterOrDigit"), isTokens(new Token("isLetterOrDigit", 1, 0)));
+    assertThat(chunk("String")).containsExactly(new Token("String", 1, 0));
+    assertThat(chunk("i3")).containsExactly(new Token("i3", 1, 0));
+    assertThat(chunk("MAX_VALUE")).containsExactly(new Token("MAX_VALUE", 1, 0));
+    assertThat(chunk("isLetterOrDigit")).containsExactly(new Token("isLetterOrDigit", 1, 0));
 
-    assertThat(chunk("_"), isTokens(new Token("_", 1, 0)));
-    assertThat(chunk("_123_"), isTokens(new Token("_123_", 1, 0)));
-    assertThat(chunk("_Field"), isTokens(new Token("_Field", 1, 0)));
-    assertThat(chunk("_Field5"), isTokens(new Token("_Field5", 1, 0)));
+    assertThat(chunk("_")).containsExactly(new Token("_", 1, 0));
+    assertThat(chunk("_123_")).containsExactly(new Token("_123_", 1, 0));
+    assertThat(chunk("_Field")).containsExactly(new Token("_Field", 1, 0));
+    assertThat(chunk("_Field5")).containsExactly(new Token("_Field5", 1, 0));
 
-    assertThat(chunk("$"), isTokens(new Token("$", 1, 0)));
-    assertThat(chunk("$field"), isTokens(new Token("$field", 1, 0)));
+    assertThat(chunk("$")).containsExactly(new Token("$", 1, 0));
+    assertThat(chunk("$field")).containsExactly(new Token("$field", 1, 0));
 
-    assertThat(chunk("i2j"), isTokens(new Token("i2j", 1, 0)));
-    assertThat(chunk("from1to4"), isTokens(new Token("from1to4", 1, 0)));
+    assertThat(chunk("i2j")).containsExactly(new Token("i2j", 1, 0));
+    assertThat(chunk("from1to4")).containsExactly(new Token("from1to4", 1, 0));
 
-    assertThat("identifier with unicode", chunk("αβγ"), isTokens(new Token("αβγ", 1, 0)));
+    assertThat(chunk("αβγ")).as("identifier with unicode").containsExactly(new Token("αβγ", 1, 0));
   }
 
   /**
@@ -97,7 +93,7 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldPreserverKeywords() {
-    assertThat(chunk("private static final"), isTokens(new Token("private", 1, 0), new Token("static", 1, 8), new Token("final", 1, 15)));
+    assertThat(chunk("private static final")).containsExactly(new Token("private", 1, 0), new Token("static", 1, 8), new Token("final", 1, 15));
   }
 
   /**
@@ -105,27 +101,27 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldNormalizeDecimalIntegerLiteral() {
-    assertThat(chunk("543"), isNumericLiteral());
-    assertThat(chunk("543l"), isNumericLiteral());
-    assertThat(chunk("543L"), isNumericLiteral());
+    assertThat(chunk("543")).containsExactly(numericLiteral());
+    assertThat(chunk("543l")).containsExactly(numericLiteral());
+    assertThat(chunk("543L")).containsExactly(numericLiteral());
   }
 
   @Test
   public void shouldNormalizeOctalIntegerLiteral() {
-    assertThat(chunk("077"), isNumericLiteral());
-    assertThat(chunk("077l"), isNumericLiteral());
-    assertThat(chunk("077L"), isNumericLiteral());
+    assertThat(chunk("077")).containsExactly(numericLiteral());
+    assertThat(chunk("077l")).containsExactly(numericLiteral());
+    assertThat(chunk("077L")).containsExactly(numericLiteral());
   }
 
   @Test
   public void shouldNormalizeHexIntegerLiteral() {
-    assertThat(chunk("0xFF"), isNumericLiteral());
-    assertThat(chunk("0xFFl"), isNumericLiteral());
-    assertThat(chunk("0xFFL"), isNumericLiteral());
+    assertThat(chunk("0xFF")).containsExactly(numericLiteral());
+    assertThat(chunk("0xFFl")).containsExactly(numericLiteral());
+    assertThat(chunk("0xFFL")).containsExactly(numericLiteral());
 
-    assertThat(chunk("0XFF"), isNumericLiteral());
-    assertThat(chunk("0XFFl"), isNumericLiteral());
-    assertThat(chunk("0XFFL"), isNumericLiteral());
+    assertThat(chunk("0XFF")).containsExactly(numericLiteral());
+    assertThat(chunk("0XFFl")).containsExactly(numericLiteral());
+    assertThat(chunk("0XFFL")).containsExactly(numericLiteral());
   }
 
   /**
@@ -133,13 +129,13 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldNormalizeBinaryIntegerLiteral() {
-    assertThat(chunk("0b10"), isNumericLiteral());
-    assertThat(chunk("0b10l"), isNumericLiteral());
-    assertThat(chunk("0b10L"), isNumericLiteral());
+    assertThat(chunk("0b10")).containsExactly(numericLiteral());
+    assertThat(chunk("0b10l")).containsExactly(numericLiteral());
+    assertThat(chunk("0b10L")).containsExactly(numericLiteral());
 
-    assertThat(chunk("0B10"), isNumericLiteral());
-    assertThat(chunk("0B10l"), isNumericLiteral());
-    assertThat(chunk("0B10L"), isNumericLiteral());
+    assertThat(chunk("0B10")).containsExactly(numericLiteral());
+    assertThat(chunk("0B10l")).containsExactly(numericLiteral());
+    assertThat(chunk("0B10L")).containsExactly(numericLiteral());
   }
 
   /**
@@ -148,72 +144,72 @@ public class JavaTokenProducerTest {
   @Test
   public void shouldNormalizeDecimalFloatingPointLiteral() {
     // with dot at the end
-    assertThat(chunk("1234."), isNumericLiteral());
-    assertThat(chunk("1234.E1"), isNumericLiteral());
-    assertThat(chunk("1234.e+1"), isNumericLiteral());
-    assertThat(chunk("1234.E-1"), isNumericLiteral());
-    assertThat(chunk("1234.f"), isNumericLiteral());
+    assertThat(chunk("1234.")).containsExactly(numericLiteral());
+    assertThat(chunk("1234.E1")).containsExactly(numericLiteral());
+    assertThat(chunk("1234.e+1")).containsExactly(numericLiteral());
+    assertThat(chunk("1234.E-1")).containsExactly(numericLiteral());
+    assertThat(chunk("1234.f")).containsExactly(numericLiteral());
 
     // with dot between
-    assertThat(chunk("12.34"), isNumericLiteral());
-    assertThat(chunk("12.34E1"), isNumericLiteral());
-    assertThat(chunk("12.34e+1"), isNumericLiteral());
-    assertThat(chunk("12.34E-1"), isNumericLiteral());
+    assertThat(chunk("12.34")).containsExactly(numericLiteral());
+    assertThat(chunk("12.34E1")).containsExactly(numericLiteral());
+    assertThat(chunk("12.34e+1")).containsExactly(numericLiteral());
+    assertThat(chunk("12.34E-1")).containsExactly(numericLiteral());
 
-    assertThat(chunk("12.34f"), isNumericLiteral());
-    assertThat(chunk("12.34E1F"), isNumericLiteral());
-    assertThat(chunk("12.34E+1d"), isNumericLiteral());
-    assertThat(chunk("12.34e-1D"), isNumericLiteral());
+    assertThat(chunk("12.34f")).containsExactly(numericLiteral());
+    assertThat(chunk("12.34E1F")).containsExactly(numericLiteral());
+    assertThat(chunk("12.34E+1d")).containsExactly(numericLiteral());
+    assertThat(chunk("12.34e-1D")).containsExactly(numericLiteral());
 
     // with dot at the beginning
-    assertThat(chunk(".1234"), isNumericLiteral());
-    assertThat(chunk(".1234e1"), isNumericLiteral());
-    assertThat(chunk(".1234E+1"), isNumericLiteral());
-    assertThat(chunk(".1234E-1"), isNumericLiteral());
+    assertThat(chunk(".1234")).containsExactly(numericLiteral());
+    assertThat(chunk(".1234e1")).containsExactly(numericLiteral());
+    assertThat(chunk(".1234E+1")).containsExactly(numericLiteral());
+    assertThat(chunk(".1234E-1")).containsExactly(numericLiteral());
 
-    assertThat(chunk(".1234f"), isNumericLiteral());
-    assertThat(chunk(".1234E1F"), isNumericLiteral());
-    assertThat(chunk(".1234e+1d"), isNumericLiteral());
-    assertThat(chunk(".1234E-1D"), isNumericLiteral());
+    assertThat(chunk(".1234f")).containsExactly(numericLiteral());
+    assertThat(chunk(".1234E1F")).containsExactly(numericLiteral());
+    assertThat(chunk(".1234e+1d")).containsExactly(numericLiteral());
+    assertThat(chunk(".1234E-1D")).containsExactly(numericLiteral());
 
     // without dot
-    assertThat(chunk("1234e1"), isNumericLiteral());
-    assertThat(chunk("1234E+1"), isNumericLiteral());
-    assertThat(chunk("1234E-1"), isNumericLiteral());
+    assertThat(chunk("1234e1")).containsExactly(numericLiteral());
+    assertThat(chunk("1234E+1")).containsExactly(numericLiteral());
+    assertThat(chunk("1234E-1")).containsExactly(numericLiteral());
 
-    assertThat(chunk("1234E1f"), isNumericLiteral());
-    assertThat(chunk("1234e+1d"), isNumericLiteral());
-    assertThat(chunk("1234E-1D"), isNumericLiteral());
+    assertThat(chunk("1234E1f")).containsExactly(numericLiteral());
+    assertThat(chunk("1234e+1d")).containsExactly(numericLiteral());
+    assertThat(chunk("1234E-1D")).containsExactly(numericLiteral());
   }
 
   @Test
   public void shouldNormalizeHexadecimalFloatingPointLiteral() {
     // with dot at the end
-    assertThat(chunk("0xAF."), isNumericLiteral());
-    assertThat(chunk("0XAF.P1"), isNumericLiteral());
-    assertThat(chunk("0xAF.p+1"), isNumericLiteral());
-    assertThat(chunk("0XAF.p-1"), isNumericLiteral());
-    assertThat(chunk("0xAF.f"), isNumericLiteral());
+    assertThat(chunk("0xAF.")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAF.P1")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAF.p+1")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAF.p-1")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAF.f")).containsExactly(numericLiteral());
 
     // with dot between
-    assertThat(chunk("0XAF.BC"), isNumericLiteral());
-    assertThat(chunk("0xAF.BCP1"), isNumericLiteral());
-    assertThat(chunk("0XAF.BCp+1"), isNumericLiteral());
-    assertThat(chunk("0xAF.BCP-1"), isNumericLiteral());
+    assertThat(chunk("0XAF.BC")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAF.BCP1")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAF.BCp+1")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAF.BCP-1")).containsExactly(numericLiteral());
 
-    assertThat(chunk("0xAF.BCf"), isNumericLiteral());
-    assertThat(chunk("0xAF.BCp1F"), isNumericLiteral());
-    assertThat(chunk("0XAF.BCP+1d"), isNumericLiteral());
-    assertThat(chunk("0XAF.BCp-1D"), isNumericLiteral());
+    assertThat(chunk("0xAF.BCf")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAF.BCp1F")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAF.BCP+1d")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAF.BCp-1D")).containsExactly(numericLiteral());
 
     // without dot
-    assertThat(chunk("0xAFp1"), isNumericLiteral());
-    assertThat(chunk("0XAFp+1"), isNumericLiteral());
-    assertThat(chunk("0xAFp-1"), isNumericLiteral());
+    assertThat(chunk("0xAFp1")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAFp+1")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAFp-1")).containsExactly(numericLiteral());
 
-    assertThat(chunk("0XAFp1f"), isNumericLiteral());
-    assertThat(chunk("0xAFp+1d"), isNumericLiteral());
-    assertThat(chunk("0XAFp-1D"), isNumericLiteral());
+    assertThat(chunk("0XAFp1f")).containsExactly(numericLiteral());
+    assertThat(chunk("0xAFp+1d")).containsExactly(numericLiteral());
+    assertThat(chunk("0XAFp-1D")).containsExactly(numericLiteral());
   }
 
   /**
@@ -221,19 +217,19 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldNormalizeNumericLiteralsWithUnderscores() {
-    assertThat(chunk("54_3L"), isNumericLiteral());
-    assertThat(chunk("07_7L"), isNumericLiteral());
-    assertThat(chunk("0b1_0L"), isNumericLiteral());
-    assertThat(chunk("0xF_FL"), isNumericLiteral());
+    assertThat(chunk("54_3L")).containsExactly(numericLiteral());
+    assertThat(chunk("07_7L")).containsExactly(numericLiteral());
+    assertThat(chunk("0b1_0L")).containsExactly(numericLiteral());
+    assertThat(chunk("0xF_FL")).containsExactly(numericLiteral());
 
-    assertThat(chunk("1_234."), isNumericLiteral());
-    assertThat(chunk("1_2.3_4"), isNumericLiteral());
-    assertThat(chunk(".1_234"), isNumericLiteral());
-    assertThat(chunk("1_234e1_0"), isNumericLiteral());
+    assertThat(chunk("1_234.")).containsExactly(numericLiteral());
+    assertThat(chunk("1_2.3_4")).containsExactly(numericLiteral());
+    assertThat(chunk(".1_234")).containsExactly(numericLiteral());
+    assertThat(chunk("1_234e1_0")).containsExactly(numericLiteral());
 
-    assertThat(chunk("0xA_F."), isNumericLiteral());
-    assertThat(chunk("0xA_F.B_C"), isNumericLiteral());
-    assertThat(chunk("0x1.ffff_ffff_ffff_fP1_023"), isNumericLiteral());
+    assertThat(chunk("0xA_F.")).containsExactly(numericLiteral());
+    assertThat(chunk("0xA_F.B_C")).containsExactly(numericLiteral());
+    assertThat(chunk("0x1.ffff_ffff_ffff_fP1_023")).containsExactly(numericLiteral());
   }
 
   /**
@@ -241,7 +237,7 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldPreserveBooleanLiterals() {
-    assertThat(chunk("true false"), isTokens(new Token("true", 1, 0), new Token("false", 1, 5)));
+    assertThat(chunk("true false")).containsExactly(new Token("true", 1, 0), new Token("false", 1, 5));
   }
 
   /**
@@ -249,11 +245,11 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldNormalizeCharacterLiterals() {
-    assertThat("single character", chunk("'a'"), isStringLiteral());
-    assertThat("escaped LF", chunk("'\\n'"), isStringLiteral());
-    assertThat("escaped quote", chunk("'\\''"), isStringLiteral());
-    assertThat("octal escape", chunk("'\\177'"), isStringLiteral());
-    assertThat("unicode escape", chunk("'\\u03a9'"), isStringLiteral());
+    assertThat(chunk("'a'")).as("single character").containsExactly(stringLiteral());
+    assertThat(chunk("'\\n'")).as("escaped LF").containsExactly(stringLiteral());
+    assertThat(chunk("'\\''")).as("escaped quote").containsExactly(stringLiteral());
+    assertThat(chunk("'\\177'")).as("octal escape").containsExactly(stringLiteral());
+    assertThat(chunk("'\\u03a9'")).as("unicode escape").containsExactly(stringLiteral());
   }
 
   /**
@@ -261,12 +257,12 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldNormalizeStringLiterals() {
-    assertThat("regular string", chunk("\"string\""), isStringLiteral());
-    assertThat("empty string", chunk("\"\""), isStringLiteral());
-    assertThat("escaped LF", chunk("\"\\n\""), isStringLiteral());
-    assertThat("escaped double quotes", chunk("\"string, which contains \\\"escaped double quotes\\\"\""), isStringLiteral());
-    assertThat("octal escape", chunk("\"string \\177\""), isStringLiteral());
-    assertThat("unicode escape", chunk("\"string \\u03a9\""), isStringLiteral());
+    assertThat(chunk("\"string\"")).as("regular string").containsExactly(stringLiteral());
+    assertThat(chunk("\"\"")).as("empty string").containsExactly(stringLiteral());
+    assertThat(chunk("\"\\n\"")).as("escaped LF").containsExactly(stringLiteral());
+    assertThat(chunk("\"string, which contains \\\"escaped double quotes\\\"\"")).as("escaped double quotes").containsExactly(stringLiteral());
+    assertThat(chunk("\"string \\177\"")).as("octal escape").containsExactly(stringLiteral());
+    assertThat(chunk("\"string \\u03a9\"")).as("unicode escape").containsExactly(stringLiteral());
   }
 
   /**
@@ -274,7 +270,7 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldPreserverNullLiteral() {
-    assertThat(chunk("null"), isTokens(new Token("null", 1, 0)));
+    assertThat(chunk("null")).containsExactly(new Token("null", 1, 0));
   }
 
   /**
@@ -282,12 +278,12 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldPreserveSeparators() {
-    assertThat(chunk("(){}[];,."), isTokens(
+    assertThat(chunk("(){}[];,.")).containsExactly(
       new Token("(", 1, 0), new Token(")", 1, 1),
       new Token("{", 1, 2), new Token("}", 1, 3),
       new Token("[", 1, 4), new Token("]", 1, 5),
       new Token(";", 1, 6), new Token(",", 1, 7),
-      new Token(".", 1, 8)));
+      new Token(".", 1, 8));
   }
 
   /**
@@ -295,17 +291,17 @@ public class JavaTokenProducerTest {
    */
   @Test
   public void shouldPreserveOperators() {
-    assertThat(chunk("+="), isTokens(new Token("+", 1, 0), new Token("=", 1, 1)));
-    assertThat(chunk("--"), isTokens(new Token("-", 1, 0), new Token("-", 1, 1)));
+    assertThat(chunk("+=")).containsExactly(new Token("+", 1, 0), new Token("=", 1, 1));
+    assertThat(chunk("--")).containsExactly(new Token("-", 1, 0), new Token("-", 1, 1));
   }
 
   @Test
   public void realExamples() {
     File testFile = DuplicationsTestUtil.findFile("/java/MessageResources.java");
-    assertThat(chunk(testFile).size(), Matchers.greaterThan(0));
+    assertThat(chunk(testFile)).isNotEmpty();
 
     testFile = DuplicationsTestUtil.findFile("/java/RequestUtils.java");
-    assertThat(chunk(testFile).size(), Matchers.greaterThan(0));
+    assertThat(chunk(testFile)).isNotEmpty();
   }
 
   private TokenQueue chunk(File file) {
@@ -320,19 +316,12 @@ public class JavaTokenProducerTest {
     }
   }
 
-  private static Matcher<List<Token>> isNumericLiteral() {
-    return isTokens(new Token("$NUMBER", 1, 0));
+  private static Token numericLiteral() {
+    return new Token("$NUMBER", 1, 0);
   }
 
-  private static Matcher<List<Token>> isStringLiteral() {
-    return isTokens(new Token("$CHARS", 1, 0));
-  }
-
-  /**
-   * @return matcher for list of tokens
-   */
-  private static Matcher<List<Token>> isTokens(Token... tokens) {
-    return is(Arrays.asList(tokens));
+  private static Token stringLiteral() {
+    return new Token("$CHARS", 1, 0);
   }
 
   private List<Token> chunk(String sourceCode) {

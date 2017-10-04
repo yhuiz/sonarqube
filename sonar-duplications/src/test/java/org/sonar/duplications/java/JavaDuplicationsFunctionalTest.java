@@ -35,8 +35,7 @@ import org.sonar.duplications.token.TokenChunker;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * From <a href="http://research.cs.queensu.ca/TechReports/Reports/2007-541.pdf">A Survey on Software Clone Detection Research (2007 year)</a>:
@@ -68,10 +67,10 @@ public class JavaDuplicationsFunctionalTest {
       "} else // Comment2",
       "  c=d-a;");
     List<CloneGroup> duplications = detect2(fragment0, fragment1);
-    assertThat(duplications.size(), is(1));
+    assertThat(duplications).hasSize(1);
     ClonePart part = duplications.get(0).getOriginPart();
-    assertThat(part.getStartLine(), is(1));
-    assertThat(part.getEndLine(), is(5));
+    assertThat(part.getStartLine()).isEqualTo(1);
+    assertThat(part.getEndLine()).isEqualTo(5);
   }
 
   /**
@@ -95,10 +94,10 @@ public class JavaDuplicationsFunctionalTest {
       "else",
       "  c = d - a; // Comment2");
     List<CloneGroup> duplications = detect2(fragment0, fragment1);
-    assertThat(duplications.size(), is(1));
+    assertThat(duplications).hasSize(1);
     ClonePart part = duplications.get(0).getOriginPart();
-    assertThat(part.getStartLine(), is(1));
-    assertThat(part.getEndLine(), is(5));
+    assertThat(part.getStartLine()).isEqualTo(1);
+    assertThat(part.getEndLine()).isEqualTo(5);
   }
 
   @Test
@@ -117,7 +116,7 @@ public class JavaDuplicationsFunctionalTest {
       "else",
       "  y = x - m; // Comment2");
     List<CloneGroup> duplications = detect2(fragment0, fragment1);
-    assertThat(duplications.size(), is(0));
+    assertThat(duplications).hasSize(0);
   }
 
   /**
@@ -142,10 +141,10 @@ public class JavaDuplicationsFunctionalTest {
       "  else return -0;",
       "}");
     List<CloneGroup> duplications = detect2(fragment0, fragment1);
-    assertThat(duplications.size(), is(1));
+    assertThat(duplications).hasSize(1);
     ClonePart part = duplications.get(0).getOriginPart();
-    assertThat(part.getStartLine(), is(3));
-    assertThat(part.getEndLine(), is(6));
+    assertThat(part.getStartLine()).isEqualTo(3);
+    assertThat(part.getEndLine()).isEqualTo(6);
   }
 
   private String source(String... lines) {
@@ -196,7 +195,7 @@ public class JavaDuplicationsFunctionalTest {
   @Test
   public void initializationOfMultidimensionalArray() {
     List<CloneGroup> duplications = detect("int[][] idx = new int[][] { { 1, 2 }, { 3, 4 } };");
-    assertThat(duplications.size(), is(0));
+    assertThat(duplications).hasSize(0);
   }
 
   /**
@@ -211,7 +210,7 @@ public class JavaDuplicationsFunctionalTest {
       "  case 'd': case 'e': case 'f':",
       "    doSomethingElse();",
       "}");
-    assertThat(duplications.size(), is(0));
+    assertThat(duplications).hasSize(0);
   }
 
   @Test
@@ -219,12 +218,12 @@ public class JavaDuplicationsFunctionalTest {
     List<CloneGroup> duplications = detect(
       "String s = \"abc\";",
       "String s = \"def\";");
-    assertThat(duplications.size(), is(1));
+    assertThat(duplications).hasSize(1);
 
     duplications = detect(
       "int i = 1;",
       "int i = 2;");
-    assertThat(duplications.size(), is(1));
+    assertThat(duplications).hasSize(1);
   }
 
 }

@@ -21,9 +21,7 @@ package org.sonar.duplications.block;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BlockTest {
 
@@ -31,22 +29,22 @@ public class BlockTest {
   public void testBuilder() {
     ByteArray hash = new ByteArray(1);
     Block block = Block.builder()
-        .setResourceId("resource")
-        .setBlockHash(hash)
-        .setIndexInFile(1)
-        .setLines(2, 3)
-        .setUnit(4, 5)
-        .build();
+      .setResourceId("resource")
+      .setBlockHash(hash)
+      .setIndexInFile(1)
+      .setLines(2, 3)
+      .setUnit(4, 5)
+      .build();
 
-    assertThat(block.getResourceId(), is("resource"));
-    assertThat(block.getBlockHash(), sameInstance(hash));
-    assertThat(block.getIndexInFile(), is(1));
+    assertThat(block.getResourceId()).isEqualTo("resource");
+    assertThat(block.getBlockHash()).isSameAs(hash);
+    assertThat(block.getIndexInFile()).isEqualTo(1);
 
-    assertThat(block.getStartLine(), is(2));
-    assertThat(block.getEndLine(), is(3));
+    assertThat(block.getStartLine()).isEqualTo(2);
+    assertThat(block.getEndLine()).isEqualTo(3);
 
-    assertThat(block.getStartUnit(), is(4));
-    assertThat(block.getEndUnit(), is(5));
+    assertThat(block.getStartUnit()).isEqualTo(4);
+    assertThat(block.getEndUnit()).isEqualTo(5);
   }
 
 }

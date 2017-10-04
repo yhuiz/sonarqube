@@ -27,7 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.db.rule.RuleMapper;
 
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThat;
 
 public class MyBatisTest {
@@ -66,8 +66,8 @@ public class MyBatisTest {
     underTest.start();
 
     try (DbSession session = underTest.openSession(false)) {
-      assertThat(session.getConnection(), notNullValue());
-      assertThat(session.getMapper(RuleMapper.class), notNullValue());
+      assertThat(session.getConnection()).isNotNull();
+      assertThat(session.getMapper(RuleMapper.class)).isNotNull();
     }
   }
 }

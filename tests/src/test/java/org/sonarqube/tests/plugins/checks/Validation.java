@@ -22,12 +22,13 @@ package org.sonarqube.tests.plugins.checks;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
-import org.sonarqube.tests.plugins.Project;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import org.hamcrest.Matchers;
+import org.hamcrest.CustomMatcher;
+import org.hamcrest.Matcher;
 import org.junit.rules.ErrorCollector;
+import org.sonarqube.tests.plugins.Project;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsResponse;
 
@@ -87,7 +88,7 @@ public class Validation {
         Double measure = measures.get(metricKey);
         errorCollector.checkThat("Measure " + metricKey + " is set on file " + filePath, measure, notNullValue());
         if (measure != null) {
-          errorCollector.checkThat("Measure " + metricKey + " is positive on file " + filePath, measure.intValue(), Matchers.greaterThanOrEqualTo(min));
+          errorCollector.checkThat("Measure " + metricKey + " is positive on file " + filePath, measure.intValue(), greaterThanOrEqualTo(min));
         }
       }
     }
@@ -111,9 +112,18 @@ public class Validation {
       errorCollector.checkThat("Source is set on file " + filePath, response.isSuccessful(), is(true));
       Sources source = Sources.parse(response.content());
       if (source != null) {
-        errorCollector.checkThat("Source is empty on file " + filePath, source.getSources().size(), Matchers.greaterThanOrEqualTo(minLines));
+        errorCollector.checkThat("Source is empty on file " + filePath, source.getSources().size(), greaterThanOrEqualTo(minLines));
       }
     }
+  }
+
+  private Matcher<Integer> greaterThanOrEqualTo(int minLines) {
+    return new CustomMatcher<Integer>("Should >= " + minLines) {
+      @Override
+      public boolean matches(Object item) {
+        return ((Integer) item) >= minLines;
+      }
+    };
   }
 
   private Iterable<String> toFiles(String path) {

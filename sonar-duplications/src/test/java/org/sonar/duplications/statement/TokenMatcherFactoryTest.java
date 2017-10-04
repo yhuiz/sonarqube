@@ -19,10 +19,6 @@
  */
 package org.sonar.duplications.statement;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
 import org.junit.Test;
 import org.sonar.duplications.statement.matcher.AnyTokenMatcher;
 import org.sonar.duplications.statement.matcher.BridgeTokenMatcher;
@@ -32,17 +28,20 @@ import org.sonar.duplications.statement.matcher.OptTokenMatcher;
 import org.sonar.duplications.statement.matcher.TokenMatcher;
 import org.sonar.duplications.statement.matcher.UptoTokenMatcher;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
 public class TokenMatcherFactoryTest {
 
   @Test
   public void shouldCreateMatchers() {
-    assertThat(TokenMatcherFactory.anyToken(), instanceOf(AnyTokenMatcher.class));
-    assertThat(TokenMatcherFactory.bridge("(", ")"), instanceOf(BridgeTokenMatcher.class));
-    assertThat(TokenMatcherFactory.forgetLastToken(), instanceOf(ForgetLastTokenMatcher.class));
-    assertThat(TokenMatcherFactory.from("if"), instanceOf(ExactTokenMatcher.class));
-    assertThat(TokenMatcherFactory.opt(mock(TokenMatcher.class)), instanceOf(OptTokenMatcher.class));
-    assertThat(TokenMatcherFactory.to(";"), instanceOf(UptoTokenMatcher.class));
-    assertThat(TokenMatcherFactory.token(";"), instanceOf(ExactTokenMatcher.class));
+    assertThat(TokenMatcherFactory.anyToken()).isInstanceOf(AnyTokenMatcher.class);
+    assertThat(TokenMatcherFactory.bridge("(", ")")).isInstanceOf(BridgeTokenMatcher.class);
+    assertThat(TokenMatcherFactory.forgetLastToken()).isInstanceOf(ForgetLastTokenMatcher.class);
+    assertThat(TokenMatcherFactory.from("if")).isInstanceOf(ExactTokenMatcher.class);
+    assertThat(TokenMatcherFactory.opt(mock(TokenMatcher.class))).isInstanceOf(OptTokenMatcher.class);
+    assertThat(TokenMatcherFactory.to(";")).isInstanceOf(UptoTokenMatcher.class);
+    assertThat(TokenMatcherFactory.token(";")).isInstanceOf(ExactTokenMatcher.class);
   }
 
 }

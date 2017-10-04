@@ -27,9 +27,8 @@ import org.junit.Test;
 import org.sonar.duplications.token.Token;
 import org.sonar.duplications.token.TokenQueue;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -42,8 +41,8 @@ public class ForgetLastTokenMatcherTest {
     List<Token> output = new ArrayList<>(Arrays.asList(token));
     ForgetLastTokenMatcher matcher = new ForgetLastTokenMatcher();
 
-    assertThat(matcher.matchToken(tokenQueue, output), is(true));
-    assertThat(output.size(), is(0));
+    assertThat(matcher.matchToken(tokenQueue, output)).isTrue();
+    assertThat(output).isEmpty();
     verify(tokenQueue).pushForward(eq(Collections.singletonList(token)));
   }
 

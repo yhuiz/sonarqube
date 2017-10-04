@@ -19,15 +19,15 @@
  */
 package org.sonar.duplications.detector.original;
 
+import java.util.Arrays;
 import org.junit.Test;
 import org.sonar.duplications.index.CloneGroup;
 import org.sonar.duplications.index.ClonePart;
 
-import java.util.Arrays;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class FilterTest {
 
@@ -44,13 +44,14 @@ public class FilterTest {
   @Test
   public void reflexive_and_antisymmetric() {
     CloneGroup c1 = newCloneGroup(1,
-        newClonePart("a", 1));
+      newClonePart("a", 1));
     CloneGroup c2 = newCloneGroup(1,
-        newClonePart("a", 1));
+      newClonePart("a", 1));
 
-    assertThat(Filter.containsIn(c1, c1), is(true));
-    assertThat(Filter.containsIn(c1, c2), is(true));
-    assertThat(Filter.containsIn(c2, c1), is(true));
+    assertThat(Filter.containsIn(c1, c1)).isTrue();
+    assertThat(Filter.containsIn(c1, c2)).isTrue();
+    ;
+    assertThat(Filter.containsIn(c2, c1)).isTrue();
   }
 
   /**
@@ -64,11 +65,11 @@ public class FilterTest {
   @Test
   public void start_index_in_C1_less_than_in_C2() {
     CloneGroup c1 = newCloneGroup(1,
-        newClonePart("a", 1));
+      newClonePart("a", 1));
     CloneGroup c2 = newCloneGroup(1,
-        newClonePart("a", 2));
+      newClonePart("a", 2));
 
-    assertThat(Filter.containsIn(c1, c2), is(false));
+    assertThat(Filter.containsIn(c1, c2)).isFalse();
   }
 
   /**
@@ -87,16 +88,16 @@ public class FilterTest {
   public void one_part_of_C2_covers_two_parts_of_C1() {
     // Note that line numbers don't matter for method which we test.
     CloneGroup c1 = newCloneGroup(1,
-        newClonePart("a", 0),
-        newClonePart("a", 2),
-        newClonePart("b", 0),
-        newClonePart("b", 2));
+      newClonePart("a", 0),
+      newClonePart("a", 2),
+      newClonePart("b", 0),
+      newClonePart("b", 2));
     CloneGroup c2 = newCloneGroup(3,
-        newClonePart("a", 0),
-        newClonePart("b", 0));
+      newClonePart("a", 0),
+      newClonePart("b", 0));
 
-    assertThat(Filter.containsIn(c1, c2), is(true));
-    assertThat(Filter.containsIn(c2, c1), is(false));
+    assertThat(Filter.containsIn(c1, c2)).isTrue();
+    assertThat(Filter.containsIn(c2, c1)).isFalse();
   }
 
   /**
@@ -114,14 +115,14 @@ public class FilterTest {
   @Test
   public void different_resources() {
     CloneGroup c1 = newCloneGroup(1,
-        newClonePart("a", 0),
-        newClonePart("a", 2));
+      newClonePart("a", 0),
+      newClonePart("a", 2));
     CloneGroup c2 = newCloneGroup(3,
-        newClonePart("a", 0),
-        newClonePart("b", 0));
+      newClonePart("a", 0),
+      newClonePart("b", 0));
 
-    assertThat(Filter.containsIn(c1, c2), is(false));
-    assertThat(Filter.containsIn(c2, c1), is(false));
+    assertThat(Filter.containsIn(c1, c2)).isFalse();
+    assertThat(Filter.containsIn(c2, c1)).isFalse();
   }
 
   /**
@@ -139,13 +140,13 @@ public class FilterTest {
   @Test
   public void second_part_of_C2_covers_first_part_of_C1() {
     CloneGroup c1 = newCloneGroup(1,
-        newClonePart("a", 2));
+      newClonePart("a", 2));
     CloneGroup c2 = newCloneGroup(2,
-        newClonePart("a", 0),
-        newClonePart("a", 2));
+      newClonePart("a", 0),
+      newClonePart("a", 2));
 
-    assertThat(Filter.containsIn(c1, c2), is(true));
-    assertThat(Filter.containsIn(c2, c1), is(false));
+    assertThat(Filter.containsIn(c1, c2)).isTrue();
+    assertThat(Filter.containsIn(c2, c1)).isFalse();
   }
 
   /**
@@ -162,11 +163,11 @@ public class FilterTest {
   @Test
   public void length_of_C1_bigger_than_length_of_C2() {
     CloneGroup c1 = spy(newCloneGroup(3,
-        newClonePart("a", 0)));
+      newClonePart("a", 0)));
     CloneGroup c2 = spy(newCloneGroup(1,
-        newClonePart("a", 0)));
+      newClonePart("a", 0)));
 
-    assertThat(Filter.containsIn(c1, c2), is(false));
+    assertThat(Filter.containsIn(c1, c2)).isFalse();
     // containsIn method should check only origin and length - no need to compare all parts
     verify(c1).getCloneUnitLength();
     verify(c2).getCloneUnitLength();
