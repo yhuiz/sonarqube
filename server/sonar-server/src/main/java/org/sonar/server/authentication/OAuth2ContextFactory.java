@@ -22,7 +22,10 @@ package org.sonar.server.authentication;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
+import org.sonar.api.Startable;
 import org.sonar.api.platform.Server;
+import org.sonar.api.server.ServerSide;
 import org.sonar.api.server.authentication.OAuth2IdentityProvider;
 import org.sonar.api.server.authentication.UserIdentity;
 import org.sonar.api.utils.log.Loggers;
@@ -35,7 +38,8 @@ import static java.lang.String.format;
 import static org.sonar.api.CoreProperties.SERVER_BASE_URL;
 import static org.sonar.server.authentication.OAuth2CallbackFilter.CALLBACK_PATH;
 
-public class OAuth2ContextFactory {
+@ServerSide
+public class OAuth2ContextFactory implements Startable {
 
   private final ThreadLocalUserSession threadLocalUserSession;
   private final UserIdentityAuthenticator userIdentityAuthenticator;
@@ -62,6 +66,20 @@ public class OAuth2ContextFactory {
     return new OAuthContextImpl(request, response, identityProvider);
   }
 
+  @Override
+  public void start() {
+    String publicRootUrl = server.getPublicRootUrl();
+    if (StringUtils.startsWithIgnoreCase(publicRootUrl, "http:")) {
+      Loggers.get(getClass()).warn(
+        "For security reasons, OAuth authentication should use HTTPS. You should set the property '{}' to a HTTPS URL.", SERVER_BASE_URL);
+    }
+  }
+
+  @Override
+  public void stop() {
+    // nothing to do
+  }
+
   private class OAuthContextImpl implements OAuth2IdentityProvider.InitContext, OAuth2IdentityProvider.CallbackContext {
 
     private final HttpServletRequest request;
@@ -76,12 +94,7 @@ public class OAuth2ContextFactory {
 
     @Override
     public String getCallbackUrl() {
-      String publicRootUrl = server.getPublicRootUrl();
-      if (publicRootUrl.startsWith("http:")) {
-        Loggers.get(getClass()).warn(
-          "For security reasons, the server URL used for OAuth authentications should be https. Please update the property '{}'.", SERVER_BASE_URL);
-      }
-      return publicRootUrl + CALLBACK_PATH + identityProvider.getKey();
+      return server.getPublicRootUrl() + CALLBACK_PATH + identityProvider.getKey();
     }
 
     @Override

@@ -126,13 +126,15 @@ public class OAuth2ContextFactoryTest {
   }
 
   @Test
-  public void display_a_warning_if_not_https() throws Exception {
+  public void non_secured_http_callback_is_accepted_but_a_warning_is_logged_at_startup() throws Exception {
     when(server.getPublicRootUrl()).thenReturn("http://mydomain.com");
 
-    OAuth2IdentityProvider.InitContext context = newInitContext();
+    underTest.start();
 
-    assertThat(context.getCallbackUrl()).isEqualTo("http://mydomain.com/oauth2/callback/github");
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsOnly("For security reasons, the server URL used for OAuth authentications should be https. Please update the property 'sonar.core.serverBaseURL'.");
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsOnly("For security reasons, OAuth authentication should use HTTPS. You should set the property 'sonar.core.serverBaseURL' to a HTTPS URL.");
+    assertThat(newInitContext().getCallbackUrl()).isEqualTo("http://mydomain.com/oauth2/callback/github");
+
+    underTest.stop();
   }
 
   @Test
