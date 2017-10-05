@@ -34,7 +34,7 @@ import org.junit.rules.ExternalResource;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 
@@ -122,8 +122,8 @@ public class ServiceTester<T extends BaseService> extends ExternalResource {
         return null;
       }
     };
-    doAnswer(answer).when(this.underTest).call(any(GetRequest.class), any(Parser.class));
-    doAnswer(answer).when(this.underTest).call(any(WsRequest.class));
+    doAnswer(answer).when(this.underTest).call(any(), any());
+    doAnswer(answer).when(this.underTest).call(any());
   }
 
   @Override

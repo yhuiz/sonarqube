@@ -150,7 +150,7 @@ public class ViewsFormulaExecutorComponentVisitorTest {
     verifySingleMetricWithVariation(ROOT_REF, 23);
   }
 
-  private AbstractIterableAssert<?, ? extends Iterable<? extends MeasureRepoEntry>, MeasureRepoEntry> verifySingleMetricWithVariation(int componentRef, int variation) {
+  private AbstractIterableAssert<?, ? extends Iterable<? extends MeasureRepoEntry>, MeasureRepoEntry, ?> verifySingleMetricWithVariation(int componentRef, int variation) {
     return assertThat(toEntries(measureRepository.getAddedRawMeasures(componentRef)))
       .containsOnly(entryOf(NEW_COVERAGE_KEY, createMeasureWithVariation(variation)));
   }

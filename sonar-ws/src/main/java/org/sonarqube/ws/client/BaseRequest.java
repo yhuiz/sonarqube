@@ -41,7 +41,8 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
-abstract class BaseRequest<SELF extends BaseRequest> implements WsRequest {
+// public because of https://github.com/mockito/mockito/issues/1196
+public abstract class BaseRequest<SELF extends BaseRequest> implements WsRequest {
 
   private final String path;
 

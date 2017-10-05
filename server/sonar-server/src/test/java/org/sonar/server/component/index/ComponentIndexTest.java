@@ -97,11 +97,11 @@ public abstract class ComponentIndexTest {
     assertExactResults(query, files.toArray(new ComponentDto[0]));
   }
 
-  protected AbstractListAssert<?, ? extends List<? extends String>, String> assertSearch(String query) {
+  protected AbstractListAssert<?, ? extends List<? extends String>, String, ?> assertSearch(String query) {
     return assertSearch(ComponentIndexQuery.builder().setQuery(query).setQualifiers(asList(PROJECT, MODULE, FILE)).build());
   }
 
-  protected AbstractListAssert<?, ? extends List<? extends String>, String> assertSearch(ComponentIndexQuery query) {
+  protected AbstractListAssert<?, ? extends List<? extends String>, String, ?> assertSearch(ComponentIndexQuery query) {
     return assertThat(index.search(query, features.get()).getQualifiers())
       .flatExtracting(ComponentHitsPerQualifier::getHits)
       .extracting(ComponentHit::getUuid);
