@@ -30,30 +30,21 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
-import org.sonar.api.web.ServletFilter;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ENGLISH;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.IOUtils.write;
-import static org.sonar.api.web.ServletFilter.UrlPattern.Builder.staticResourcePatterns;
 import static org.sonarqube.ws.MediaTypes.HTML;
 
 /**
- * This filter provide the HTML file that will be used to display every web pages.
- * The same file should be provided for any URLs except WS and static resources.
+ * This filter provide the HTML file that will be used to display "/".
  */
 public class WebPagesFilter implements Filter {
 
   private static final String CACHE_CONTROL_HEADER = "Cache-Control";
   private static final String CACHE_CONTROL_VALUE = "no-cache, no-store, must-revalidate";
-
   private static final String CONTEXT_PLACEHOLDER = "%WEB_CONTEXT%";
-
-  private static final ServletFilter.UrlPattern URL_PATTERN = ServletFilter.UrlPattern
-    .builder()
-    .excludes(staticResourcePatterns())
-    .build();
 
   private String indexDotHtml;
 
@@ -62,14 +53,14 @@ public class WebPagesFilter implements Filter {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
     String path = httpServletRequest.getRequestURI().replaceFirst(httpServletRequest.getContextPath(), "");
-    if (!URL_PATTERN.matches(path)) {
-      chain.doFilter(request, response);
+    if ("/".equals(path)) {
+      httpServletResponse.setContentType(HTML);
+      httpServletResponse.setCharacterEncoding(UTF_8.name().toLowerCase(ENGLISH));
+      httpServletResponse.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
+      write(indexDotHtml, httpServletResponse.getOutputStream(), UTF_8);
       return;
     }
-    httpServletResponse.setContentType(HTML);
-    httpServletResponse.setCharacterEncoding(UTF_8.name().toLowerCase(ENGLISH));
-    httpServletResponse.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
-    write(indexDotHtml, httpServletResponse.getOutputStream(), UTF_8);
+    chain.doFilter(request, response);
   }
 
   @Override
